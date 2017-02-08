@@ -15,7 +15,7 @@
 
 	<!-- A universally unique application identifier. Must be unique across all AIR applications.
 	Using a reverse DNS-style name as the id is recommended. (Eg. com.example.ExampleApplication.) Required. -->
-	<id>Main</id>
+	<id>com.acrrm.cairns-crush-saga</id>
 
 	<!-- Used as the filename for the application. Required. -->
 	<filename>CairnsCrushMobile</filename>
@@ -28,7 +28,7 @@
 	Values can also be 1-part or 2-part. It is not necessary to have a 3-part value.
 	An updated version of application must have a versionNumber value higher than the previous version. Required for namespace >= 2.5 .
     For iOS Apps, this represents build number. -->
-	<versionNumber>0.0.0</versionNumber>
+	<versionNumber>0.0.1</versionNumber>
 		         
 	<!-- A string value (such as "v1", "2.5", or "Alpha 1") that represents the version of the application, as it should be shown to users. 
      For iOS Apps, this represents application version number and format should be (<0-999>.<0-999>.<0-999>).
@@ -93,7 +93,7 @@
 
         <!-- The aspect ratio of the app ("portrait" or "landscape" or "any"). Optional. Mobile only. Default is the natural orientation of the device -->
 
-        <!-- <aspectRatio></aspectRatio> -->
+        <aspectRatio>portrait</aspectRatio>
 
         <!-- Whether the app will begin auto-orienting on launch. Optional. Mobile only. Default false -->
 
@@ -101,11 +101,11 @@
 
         <!-- Whether the app launches in full screen. Optional. Mobile only. Default false -->
 
-        <!-- <fullScreen></fullScreen> -->
+        <!--  <fullScreen>true</fullScreen> -->
 
         <!-- The render mode for the app (either auto, cpu, gpu, or direct). Optional. Default auto -->
 
-        <!-- <renderMode></renderMode> -->
+        <renderMode>direct</renderMode>
 
         <!-- Whether the default direct mode rendering context allocates storage for depth and stencil buffers.  Optional.  Default false. -->
         <!-- <depthAndStencil></depthAndStencil> -->

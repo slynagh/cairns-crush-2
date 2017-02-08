@@ -119,25 +119,25 @@ package starling.utils
         // This HTTPStatusEvent is only available in AIR
         private static const HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
 
-        private var _starling:Starling;
-        private var _numLostTextures:int;
-        private var _numRestoredTextures:int;
-        private var _numLoadingQueues:int;
+        private var mStarling:Starling;
+        private var mNumLostTextures:int;
+        private var mNumRestoredTextures:int;
+        private var mNumLoadingQueues:int;
 
-        private var _defaultTextureOptions:TextureOptions;
-        private var _checkPolicyFile:Boolean;
-        private var _keepAtlasXmls:Boolean;
-        private var _keepFontXmls:Boolean;
-        private var _numConnections:int;
-        private var _verbose:Boolean;
-        private var _queue:Array;
+        private var mDefaultTextureOptions:TextureOptions;
+        private var mCheckPolicyFile:Boolean;
+        private var mKeepAtlasXmls:Boolean;
+        private var mKeepFontXmls:Boolean;
+        private var mNumConnections:int;
+        private var mVerbose:Boolean;
+        private var mQueue:Array;
         
-        private var _textures:Dictionary;
-        private var _atlases:Dictionary;
-        private var _sounds:Dictionary;
-        private var _xmls:Dictionary;
-        private var _objects:Dictionary;
-        private var _byteArrays:Dictionary;
+        private var mTextures:Dictionary;
+        private var mAtlases:Dictionary;
+        private var mSounds:Dictionary;
+        private var mXmls:Dictionary;
+        private var mObjects:Dictionary;
+        private var mByteArrays:Dictionary;
         
         /** helper objects */
         private static var sNames:Vector.<String> = new <String>[];
@@ -149,16 +149,16 @@ package starling.utils
          *  how enqueued bitmaps will be converted to textures. */
         public function AssetManager(scaleFactor:Number=1, useMipmaps:Boolean=false)
         {
-            _defaultTextureOptions = new TextureOptions(scaleFactor, useMipmaps);
-            _textures = new Dictionary();
-            _atlases = new Dictionary();
-            _sounds = new Dictionary();
-            _xmls = new Dictionary();
-            _objects = new Dictionary();
-            _byteArrays = new Dictionary();
-            _numConnections = 3;
-            _verbose = true;
-            _queue = [];
+            mDefaultTextureOptions = new TextureOptions(scaleFactor, useMipmaps);
+            mTextures = new Dictionary();
+            mAtlases = new Dictionary();
+            mSounds = new Dictionary();
+            mXmls = new Dictionary();
+            mObjects = new Dictionary();
+            mByteArrays = new Dictionary();
+            mNumConnections = 3;
+            mVerbose = true;
+            mQueue = [];
         }
         
         /** Disposes all contained textures, XMLs and ByteArrays.
@@ -169,16 +169,16 @@ package starling.utils
          */
         public function dispose():void
         {
-            for each (var texture:Texture in _textures)
+            for each (var texture:Texture in mTextures)
                 texture.dispose();
             
-            for each (var atlas:TextureAtlas in _atlases)
+            for each (var atlas:TextureAtlas in mAtlases)
                 atlas.dispose();
             
-            for each (var xml:XML in _xmls)
+            for each (var xml:XML in mXmls)
                 System.disposeXML(xml);
             
-            for each (var byteArray:ByteArray in _byteArrays)
+            for each (var byteArray:ByteArray in mByteArrays)
                 byteArray.clear();
         }
         
@@ -189,10 +189,10 @@ package starling.utils
          *  texture atlases. */
         public function getTexture(name:String):Texture
         {
-            if (name in _textures) return _textures[name];
+            if (name in mTextures) return mTextures[name];
             else
             {
-                for each (var atlas:TextureAtlas in _atlases)
+                for each (var atlas:TextureAtlas in mAtlases)
                 {
                     var texture:Texture = atlas.getTexture(name);
                     if (texture) return texture;
@@ -203,53 +203,53 @@ package starling.utils
         
         /** Returns all textures that start with a certain string, sorted alphabetically
          *  (especially useful for "MovieClip"). */
-        public function getTextures(prefix:String="", out:Vector.<Texture>=null):Vector.<Texture>
+        public function getTextures(prefix:String="", result:Vector.<Texture>=null):Vector.<Texture>
         {
-            if (out == null) out = new <Texture>[];
+            if (result == null) result = new <Texture>[];
             
             for each (var name:String in getTextureNames(prefix, sNames))
-                out[out.length] = getTexture(name); // avoid 'push'
+                result[result.length] = getTexture(name); // avoid 'push'
 
             sNames.length = 0;
-            return out;
+            return result;
         }
         
         /** Returns all texture names that start with a certain string, sorted alphabetically. */
-        public function getTextureNames(prefix:String="", out:Vector.<String>=null):Vector.<String>
+        public function getTextureNames(prefix:String="", result:Vector.<String>=null):Vector.<String>
         {
-            out = getDictionaryKeys(_textures, prefix, out);
+            result = getDictionaryKeys(mTextures, prefix, result);
             
-            for each (var atlas:TextureAtlas in _atlases)
-                atlas.getNames(prefix, out);
+            for each (var atlas:TextureAtlas in mAtlases)
+                atlas.getNames(prefix, result);
             
-            out.sort(Array.CASEINSENSITIVE);
-            return out;
+            result.sort(Array.CASEINSENSITIVE);
+            return result;
         }
         
         /** Returns a texture atlas with a certain name, or null if it's not found. */
         public function getTextureAtlas(name:String):TextureAtlas
         {
-            return _atlases[name] as TextureAtlas;
+            return mAtlases[name] as TextureAtlas;
         }
 
         /** Returns all texture atlas names that start with a certain string, sorted alphabetically.
-         *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-        public function getTextureAtlasNames(prefix:String="", out:Vector.<String>=null):Vector.<String>
+         *  If you pass a result vector, the names will be added to that vector. */
+        public function getTextureAtlasNames(prefix:String="", result:Vector.<String>=null):Vector.<String>
         {
-            return getDictionaryKeys(_atlases, prefix, out);
+            return getDictionaryKeys(mAtlases, prefix, result);
         }
-
+        
         /** Returns a sound with a certain name, or null if it's not found. */
         public function getSound(name:String):Sound
         {
-            return _sounds[name];
+            return mSounds[name];
         }
         
         /** Returns all sound names that start with a certain string, sorted alphabetically.
-         *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-        public function getSoundNames(prefix:String="", out:Vector.<String>=null):Vector.<String>
+         *  If you pass a result vector, the names will be added to that vector. */
+        public function getSoundNames(prefix:String="", result:Vector.<String>=null):Vector.<String>
         {
-            return getDictionaryKeys(_sounds, prefix, out);
+            return getDictionaryKeys(mSounds, prefix, result);
         }
         
         /** Generates a new SoundChannel object to play back the sound. This method returns a 
@@ -257,7 +257,7 @@ package starling.utils
         public function playSound(name:String, startTime:Number=0, loops:int=0, 
                                   transform:SoundTransform=null):SoundChannel
         {
-            if (name in _sounds)
+            if (name in mSounds)
                 return getSound(name).play(startTime, loops, transform);
             else 
                 return null;
@@ -266,41 +266,41 @@ package starling.utils
         /** Returns an XML with a certain name, or null if it's not found. */
         public function getXml(name:String):XML
         {
-            return _xmls[name];
+            return mXmls[name];
         }
         
         /** Returns all XML names that start with a certain string, sorted alphabetically. 
-         *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-        public function getXmlNames(prefix:String="", out:Vector.<String>=null):Vector.<String>
+         *  If you pass a result vector, the names will be added to that vector. */
+        public function getXmlNames(prefix:String="", result:Vector.<String>=null):Vector.<String>
         {
-            return getDictionaryKeys(_xmls, prefix, out);
+            return getDictionaryKeys(mXmls, prefix, result);
         }
 
         /** Returns an object with a certain name, or null if it's not found. Enqueued JSON
          *  data is parsed and can be accessed with this method. */
         public function getObject(name:String):Object
         {
-            return _objects[name];
+            return mObjects[name];
         }
         
         /** Returns all object names that start with a certain string, sorted alphabetically. 
-         *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-        public function getObjectNames(prefix:String="", out:Vector.<String>=null):Vector.<String>
+         *  If you pass a result vector, the names will be added to that vector. */
+        public function getObjectNames(prefix:String="", result:Vector.<String>=null):Vector.<String>
         {
-            return getDictionaryKeys(_objects, prefix, out);
+            return getDictionaryKeys(mObjects, prefix, result);
         }
         
         /** Returns a byte array with a certain name, or null if it's not found. */
         public function getByteArray(name:String):ByteArray
         {
-            return _byteArrays[name];
+            return mByteArrays[name];
         }
         
         /** Returns all byte array names that start with a certain string, sorted alphabetically. 
-         *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-        public function getByteArrayNames(prefix:String="", out:Vector.<String>=null):Vector.<String>
+         *  If you pass a result vector, the names will be added to that vector. */
+        public function getByteArrayNames(prefix:String="", result:Vector.<String>=null):Vector.<String>
         {
-            return getDictionaryKeys(_byteArrays, prefix, out);
+            return getDictionaryKeys(mByteArrays, prefix, result);
         }
         
         // direct adding
@@ -312,13 +312,13 @@ package starling.utils
         {
             log("Adding texture '" + name + "'");
             
-            if (name in _textures)
+            if (name in mTextures)
             {
                 log("Warning: name was already in use; the previous texture will be replaced.");
-                _textures[name].dispose();
+                mTextures[name].dispose();
             }
             
-            _textures[name] = texture;
+            mTextures[name] = texture;
         }
         
         /** Register a texture atlas under a certain name. It will be available right away. 
@@ -328,13 +328,13 @@ package starling.utils
         {
             log("Adding texture atlas '" + name + "'");
             
-            if (name in _atlases)
+            if (name in mAtlases)
             {
                 log("Warning: name was already in use; the previous atlas will be replaced.");
-                _atlases[name].dispose();
+                mAtlases[name].dispose();
             }
             
-            _atlases[name] = atlas;
+            mAtlases[name] = atlas;
         }
         
         /** Register a sound under a certain name. It will be available right away.
@@ -343,10 +343,10 @@ package starling.utils
         {
             log("Adding sound '" + name + "'");
             
-            if (name in _sounds)
+            if (name in mSounds)
                 log("Warning: name was already in use; the previous sound will be replaced.");
 
-            _sounds[name] = sound;
+            mSounds[name] = sound;
         }
         
         /** Register an XML object under a certain name. It will be available right away.
@@ -356,13 +356,13 @@ package starling.utils
         {
             log("Adding XML '" + name + "'");
             
-            if (name in _xmls)
+            if (name in mXmls)
             {
                 log("Warning: name was already in use; the previous XML will be replaced.");
-                System.disposeXML(_xmls[name]);
+                System.disposeXML(mXmls[name]);
             }
 
-            _xmls[name] = xml;
+            mXmls[name] = xml;
         }
         
         /** Register an arbitrary object under a certain name. It will be available right away. 
@@ -371,10 +371,10 @@ package starling.utils
         {
             log("Adding object '" + name + "'");
             
-            if (name in _objects)
+            if (name in mObjects)
                 log("Warning: name was already in use; the previous object will be replaced.");
             
-            _objects[name] = object;
+            mObjects[name] = object;
         }
         
         /** Register a byte array under a certain name. It will be available right away.
@@ -384,13 +384,13 @@ package starling.utils
         {
             log("Adding byte array '" + name + "'");
             
-            if (name in _byteArrays)
+            if (name in mByteArrays)
             {
                 log("Warning: name was already in use; the previous byte array will be replaced.");
-                _byteArrays[name].clear();
+                mByteArrays[name].clear();
             }
             
-            _byteArrays[name] = byteArray;
+            mByteArrays[name] = byteArray;
         }
         
         // removing
@@ -400,10 +400,10 @@ package starling.utils
         {
             log("Removing texture '" + name + "'");
             
-            if (dispose && name in _textures)
-                _textures[name].dispose();
+            if (dispose && name in mTextures)
+                mTextures[name].dispose();
             
-            delete _textures[name];
+            delete mTextures[name];
         }
         
         /** Removes a certain texture atlas, optionally disposing it. */
@@ -411,17 +411,17 @@ package starling.utils
         {
             log("Removing texture atlas '" + name + "'");
             
-            if (dispose && name in _atlases)
-                _atlases[name].dispose();
+            if (dispose && name in mAtlases)
+                mAtlases[name].dispose();
             
-            delete _atlases[name];
+            delete mAtlases[name];
         }
         
         /** Removes a certain sound. */
         public function removeSound(name:String):void
         {
             log("Removing sound '"+ name + "'");
-            delete _sounds[name];
+            delete mSounds[name];
         }
         
         /** Removes a certain Xml object, optionally disposing it. */
@@ -429,17 +429,17 @@ package starling.utils
         {
             log("Removing xml '"+ name + "'");
             
-            if (dispose && name in _xmls)
-                System.disposeXML(_xmls[name]);
+            if (dispose && name in mXmls)
+                System.disposeXML(mXmls[name]);
             
-            delete _xmls[name];
+            delete mXmls[name];
         }
         
         /** Removes a certain object. */
         public function removeObject(name:String):void
         {
             log("Removing object '"+ name + "'");
-            delete _objects[name];
+            delete mObjects[name];
         }
         
         /** Removes a certain byte array, optionally disposing its memory right away. */
@@ -447,16 +447,16 @@ package starling.utils
         {
             log("Removing byte array '"+ name + "'");
             
-            if (dispose && name in _byteArrays)
-                _byteArrays[name].clear();
+            if (dispose && name in mByteArrays)
+                mByteArrays[name].clear();
             
-            delete _byteArrays[name];
+            delete mByteArrays[name];
         }
         
         /** Empties the queue and aborts any pending load operations. */
         public function purgeQueue():void
         {
-            _queue.length = 0;
+            mQueue.length = 0;
             dispatchEventWith(Event.CANCEL);
         }
         
@@ -469,12 +469,12 @@ package starling.utils
             purgeQueue();
             dispose();
 
-            _textures = new Dictionary();
-            _atlases = new Dictionary();
-            _sounds = new Dictionary();
-            _xmls = new Dictionary();
-            _objects = new Dictionary();
-            _byteArrays = new Dictionary();
+            mTextures = new Dictionary();
+            mAtlases = new Dictionary();
+            mSounds = new Dictionary();
+            mXmls = new Dictionary();
+            mObjects = new Dictionary();
+            mByteArrays = new Dictionary();
         }
         
         // queued adding
@@ -518,7 +518,7 @@ package starling.utils
                     var typeXml:XML = describeType(rawAsset);
                     var childNode:XML;
                     
-                    if (_verbose)
+                    if (mVerbose)
                         log("Looking for static embedded assets in '" + 
                             (typeXml.@name).split("::").pop() + "'"); 
                     
@@ -566,21 +566,16 @@ package starling.utils
         public function enqueueWithName(asset:Object, name:String=null,
                                         options:TextureOptions=null):String
         {
-            var filename:String = null;
-
             if (getQualifiedClassName(asset) == "flash.filesystem::File")
-            {
-                filename = asset["name"];
                 asset = decodeURI(asset["url"]);
-            }
-
+            
             if (name == null)    name = getName(asset);
-            if (options == null) options = _defaultTextureOptions.clone();
+            if (options == null) options = mDefaultTextureOptions.clone();
             else                 options = options.clone();
-
-            log("Enqueuing '" + (filename || name) + "'");
-
-            _queue.push({
+            
+            log("Enqueuing '" + name + "'");
+            
+            mQueue.push({
                 name: name,
                 asset: asset,
                 options: options
@@ -604,15 +599,15 @@ package starling.utils
             if (onProgress == null)
                 throw new ArgumentError("Argument 'onProgress' must not be null");
 
-            if (_queue.length == 0)
+            if (mQueue.length == 0)
             {
                 onProgress(1.0);
                 return;
             }
 
-            _starling = Starling.current;
+            mStarling = Starling.current;
             
-            if (_starling == null || _starling.context == null)
+            if (mStarling == null || mStarling.context == null)
                 throw new Error("The Starling instance needs to be ready before assets can be loaded.");
 
             const PROGRESS_PART_ASSETS:Number = 0.9;
@@ -621,19 +616,19 @@ package starling.utils
             var i:int;
             var canceled:Boolean = false;
             var xmls:Vector.<XML> = new <XML>[];
-            var assetInfos:Array = _queue.concat();
-            var assetCount:int = _queue.length;
+            var assetInfos:Array = mQueue.concat();
+            var assetCount:int = mQueue.length;
             var assetProgress:Array = [];
             var assetIndex:int = 0;
             
             for (i=0; i<assetCount; ++i)
                 assetProgress[i] = 0.0;
 
-            for (i=0; i<_numConnections; ++i)
+            for (i=0; i<mNumConnections; ++i)
                 loadNextQueueElement();
 
-            _queue.length = 0;
-            _numLoadingQueues++;
+            mQueue.length = 0;
+            mNumLoadingQueues++;
             addEventListener(Event.CANCEL, cancel);
 
             function loadNextQueueElement():void
@@ -719,7 +714,7 @@ package starling.utils
                         addTextureAtlas(name, new TextureAtlas(texture, xml));
                         removeTexture(name, false);
 
-                        if (_keepAtlasXmls) addXml(name, xml);
+                        if (mKeepAtlasXmls) addXml(name, xml);
                         else System.disposeXML(xml);
                     }
                     else log("Cannot create atlas: texture '" + name + "' is missing.");
@@ -732,10 +727,10 @@ package starling.utils
                     if (texture)
                     {
                         log("Adding bitmap font '" + name + "'");
-                        TextField.registerCompositor(new BitmapFont(texture, xml), name);
+                        TextField.registerBitmapFont(new BitmapFont(texture, xml), name);
                         removeTexture(name, false);
 
-                        if (_keepFontXmls) addXml(name, xml);
+                        if (mKeepFontXmls) addXml(name, xml);
                         else System.disposeXML(xml);
                     }
                     else log("Cannot create bitmap font: texture '" + name + "' is missing.");
@@ -750,7 +745,7 @@ package starling.utils
             function cancel():void
             {
                 removeEventListener(Event.CANCEL, cancel);
-                _numLoadingQueues--;
+                mNumLoadingQueues--;
                 canceled = true;
             }
 
@@ -789,7 +784,7 @@ package starling.utils
                 
                 // the 'current' instance might have changed by now
                 // if we're running in a set-up with multiple instances.
-                _starling.makeCurrent();
+                mStarling.makeCurrent();
                 
                 if (canceled)
                 {
@@ -815,7 +810,7 @@ package starling.utils
                     
                     onComplete();
                 }
-                else if (_starling.context.driverInfo == "Disposed")
+                else if (Starling.handleLostContext && mStarling.context.driverInfo == "Disposed")
                 {
                     log("Context lost while processing assets, retrying ...");
                     setTimeout(process, 1, asset);
@@ -823,16 +818,10 @@ package starling.utils
                 }
                 else if (asset is Bitmap)
                 {
-                    options.onReady = prependCallback(options.onReady, function():void
-                    {
-                        addTexture(name, texture);
-                        onComplete();
-                    });
-
                     texture = Texture.fromData(asset, options);
                     texture.root.onRestore = function():void
                     {
-                        _numLostTextures++;
+                        mNumLostTextures++;
                         loadRawAsset(rawAsset, null, function(asset:Object):void
                         {
                             try
@@ -846,13 +835,16 @@ package starling.utils
                                 log("Texture restoration failed for '" + name + "': " + e.message);
                             }
 
-                            _numRestoredTextures++;
-                            Starling.current.stage.setRequiresRedraw();
+                            mNumRestoredTextures++;
                             
-                            if (_numLostTextures == _numRestoredTextures)
+                            if (mNumLostTextures == mNumRestoredTextures)
                                 dispatchEventWith(Event.TEXTURES_RESTORED);
                         });
                     };
+
+                    asset.bitmapData.dispose();
+                    addTexture(name, texture);
+                    onComplete();
                 }
                 else if (asset is ByteArray)
                 {
@@ -869,13 +861,13 @@ package starling.utils
                         texture = Texture.fromData(bytes, options);
                         texture.root.onRestore = function():void
                         {
-                            _numLostTextures++;
+                            mNumLostTextures++;
                             loadRawAsset(rawAsset, null, function(asset:Object):void
                             {
                                 try
                                 {
                                     if (asset == null) throw new Error("Reload failed");
-                                    texture.root.uploadAtfData(asset as ByteArray, 0, false);
+                                    texture.root.uploadAtfData(asset as ByteArray, 0, true);
                                     asset.clear();
                                 }
                                 catch (e:Error)
@@ -883,10 +875,9 @@ package starling.utils
                                     log("Texture restoration failed for '" + name + "': " + e.message);
                                 }
                                 
-                                _numRestoredTextures++;
-                                Starling.current.stage.setRequiresRedraw();
+                                mNumRestoredTextures++;
                                 
-                                if (_numLostTextures == _numRestoredTextures)
+                                if (mNumLostTextures == mNumRestoredTextures)
                                     dispatchEventWith(Event.TEXTURES_RESTORED);
                             });
                         };
@@ -1051,7 +1042,7 @@ package starling.utils
                     case "jpeg":
                     case "png":
                     case "gif":
-                        var loaderContext:LoaderContext = new LoaderContext(_checkPolicyFile);
+                        var loaderContext:LoaderContext = new LoaderContext(mCheckPolicyFile);
                         var loader:Loader = new Loader();
                         loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
                         loaderInfo = loader.contentLoaderInfo;
@@ -1147,7 +1138,7 @@ package starling.utils
          *  default, it traces 'message' to the console. */
         protected function log(message:String):void
         {
-            if (_verbose) trace("[AssetManager]", message);
+            if (mVerbose) trace("[AssetManager]", message);
         }
         
         private function byteArrayStartsWith(bytes:ByteArray, char:String):Boolean
@@ -1187,16 +1178,16 @@ package starling.utils
         }
         
         private function getDictionaryKeys(dictionary:Dictionary, prefix:String="",
-                                           out:Vector.<String>=null):Vector.<String>
+                                           result:Vector.<String>=null):Vector.<String>
         {
-            if (out == null) out = new <String>[];
+            if (result == null) result = new <String>[];
             
             for (var name:String in dictionary)
                 if (name.indexOf(prefix) == 0)
-                    out[out.length] = name; // avoid 'push'
+                    result[result.length] = name; // avoid 'push'
 
-            out.sort(Array.CASEINSENSITIVE);
-            return out;
+            result.sort(Array.CASEINSENSITIVE);
+            return result;
         }
         
         private function getHttpHeader(headers:Array, headerName:String):String
@@ -1243,62 +1234,61 @@ package starling.utils
         
         /** The queue contains one 'Object' for each enqueued asset. Each object has 'asset'
          *  and 'name' properties, pointing to the raw asset and its name, respectively. */
-        protected function get queue():Array { return _queue; }
+        protected function get queue():Array { return mQueue; }
         
         /** Returns the number of raw assets that have been enqueued, but not yet loaded. */
-        public function get numQueuedAssets():int { return _queue.length; }
+        public function get numQueuedAssets():int { return mQueue.length; }
         
         /** When activated, the class will trace information about added/enqueued assets.
          *  @default true */
-        public function get verbose():Boolean { return _verbose; }
-        public function set verbose(value:Boolean):void { _verbose = value; }
+        public function get verbose():Boolean { return mVerbose; }
+        public function set verbose(value:Boolean):void { mVerbose = value; }
         
         /** Indicates if a queue is currently being loaded. */
-        public function get isLoading():Boolean { return _numLoadingQueues > 0; }
+        public function get isLoading():Boolean { return mNumLoadingQueues > 0; }
 
         /** For bitmap textures, this flag indicates if mip maps should be generated when they 
          *  are loaded; for ATF textures, it indicates if mip maps are valid and should be
          *  used. @default false */
-        public function get useMipMaps():Boolean { return _defaultTextureOptions.mipMapping; }
-        public function set useMipMaps(value:Boolean):void { _defaultTextureOptions.mipMapping = value; }
+        public function get useMipMaps():Boolean { return mDefaultTextureOptions.mipMapping; }
+        public function set useMipMaps(value:Boolean):void { mDefaultTextureOptions.mipMapping = value; }
         
-        /** Textures that are created from Bitmaps or ATF files will have the scale factor
+        /** Textures that are created from Bitmaps or ATF files will have the repeat setting
+         *  assigned here. @default false */
+        public function get textureRepeat():Boolean { return mDefaultTextureOptions.repeat; }
+        public function set textureRepeat(value:Boolean):void { mDefaultTextureOptions.repeat = value; }
+
+        /** Textures that are created from Bitmaps or ATF files will have the scale factor 
          *  assigned here. @default 1 */
-        public function get scaleFactor():Number { return _defaultTextureOptions.scale; }
-        public function set scaleFactor(value:Number):void { _defaultTextureOptions.scale = value; }
+        public function get scaleFactor():Number { return mDefaultTextureOptions.scale; }
+        public function set scaleFactor(value:Number):void { mDefaultTextureOptions.scale = value; }
 
         /** Textures that are created from Bitmaps will be uploaded to the GPU with the
          *  <code>Context3DTextureFormat</code> assigned to this property. @default "bgra" */
-        public function get textureFormat():String { return _defaultTextureOptions.format; }
-        public function set textureFormat(value:String):void { _defaultTextureOptions.format = value; }
-
-        /** Indicates if the underlying Stage3D textures should be created as the power-of-two based
-         *  <code>Texture</code> class instead of the more memory efficient <code>RectangleTexture</code>.
-         *  @default false */
-        public function get forcePotTextures():Boolean { return _defaultTextureOptions.forcePotTexture; }
-        public function set forcePotTextures(value:Boolean):void { _defaultTextureOptions.forcePotTexture = value; }
+        public function get textureFormat():String { return mDefaultTextureOptions.format; }
+        public function set textureFormat(value:String):void { mDefaultTextureOptions.format = value; }
         
         /** Specifies whether a check should be made for the existence of a URL policy file before
          *  loading an object from a remote server. More information about this topic can be found 
          *  in the 'flash.system.LoaderContext' documentation. @default false */
-        public function get checkPolicyFile():Boolean { return _checkPolicyFile; }
-        public function set checkPolicyFile(value:Boolean):void { _checkPolicyFile = value; }
+        public function get checkPolicyFile():Boolean { return mCheckPolicyFile; }
+        public function set checkPolicyFile(value:Boolean):void { mCheckPolicyFile = value; }
 
         /** Indicates if atlas XML data should be stored for access via the 'getXml' method.
          *  If true, you can access an XML under the same name as the atlas.
          *  If false, XMLs will be disposed when the atlas was created. @default false. */
-        public function get keepAtlasXmls():Boolean { return _keepAtlasXmls; }
-        public function set keepAtlasXmls(value:Boolean):void { _keepAtlasXmls = value; }
+        public function get keepAtlasXmls():Boolean { return mKeepAtlasXmls; }
+        public function set keepAtlasXmls(value:Boolean):void { mKeepAtlasXmls = value; }
 
         /** Indicates if bitmap font XML data should be stored for access via the 'getXml' method.
          *  If true, you can access an XML under the same name as the bitmap font.
          *  If false, XMLs will be disposed when the font was created. @default false. */
-        public function get keepFontXmls():Boolean { return _keepFontXmls; }
-        public function set keepFontXmls(value:Boolean):void { _keepFontXmls = value; }
+        public function get keepFontXmls():Boolean { return mKeepFontXmls; }
+        public function set keepFontXmls(value:Boolean):void { mKeepFontXmls = value; }
 
         /** The maximum number of parallel connections that are spawned when loading the queue.
          *  More connections can reduce loading times, but require more memory. @default 3. */
-        public function get numConnections():int { return _numConnections; }
-        public function set numConnections(value:int):void { _numConnections = value; }
+        public function get numConnections():int { return mNumConnections; }
+        public function set numConnections(value:int):void { mNumConnections = value; }
     }
 }

@@ -14,9 +14,9 @@ package starling.display
     import flash.geom.Matrix3D;
     import flash.geom.Point;
     import flash.geom.Vector3D;
-
+    
+    import starling.core.RenderSupport;
     import starling.events.Event;
-    import starling.rendering.Painter;
     import starling.utils.MathUtil;
     import starling.utils.MatrixUtil;
     import starling.utils.rad2deg;
@@ -56,26 +56,27 @@ package starling.display
      *
      *  <p><strong>Limitations</strong></p>
      *
+     *  <p>A Sprite3D object cannot be flattened (although you can flatten objects <em>within</em>
+     *  a Sprite3D), and it does not work with the "clipRect" property. Furthermore, a filter
+     *  applied to a Sprite3D object cannot be cached.</p>
+     *
      *  <p>On rendering, each Sprite3D requires its own draw call — except if the object does not
-     *  contain any 3D transformations ('z', 'rotationX/Y' and 'pivotZ' are zero). Furthermore,
-     *  it interrupts the render cache, i.e. the cache cannot contain objects within different
-     *  3D coordinate systems. Flat contents within the Sprite3D will be cached, though.</p>
+     *  contain any 3D transformations ('z', 'rotationX/Y' and 'pivotZ' are zero).</p>
      *
      */
     public class Sprite3D extends DisplayObjectContainer
     {
         private static const E:Number = 0.00001;
 
-        private var _rotationX:Number;
-        private var _rotationY:Number;
-        private var _scaleZ:Number;
-        private var _pivotZ:Number;
-        private var _z:Number;
+        private var mRotationX:Number;
+        private var mRotationY:Number;
+        private var mScaleZ:Number;
+        private var mPivotZ:Number;
+        private var mZ:Number;
 
-        private var _transformationMatrix:Matrix;
-        private var _transformationMatrix3D:Matrix3D;
-        private var _transformationChanged:Boolean;
-        private var _is2D:Boolean;
+        private var mTransformationMatrix:Matrix;
+        private var mTransformationMatrix3D:Matrix3D;
+        private var mTransformationChanged:Boolean;
 
         /** Helper objects. */
         private static var sHelperPoint:Vector3D    = new Vector3D();
@@ -85,42 +86,41 @@ package starling.display
         /** Creates an empty Sprite3D. */
         public function Sprite3D()
         {
-            _scaleZ = 1.0;
-            _rotationX = _rotationY = _pivotZ = _z = 0.0;
-            _transformationMatrix = new Matrix();
-            _transformationMatrix3D = new Matrix3D();
-            _is2D = true;  // meaning: this 3D object contains only 2D content
-            setIs3D(true); // meaning: this display object supports 3D transformations
+            mScaleZ = 1.0;
+            mRotationX = mRotationY = mPivotZ = mZ = 0.0;
+            mTransformationMatrix = new Matrix();
+            mTransformationMatrix3D = new Matrix3D();
+            setIs3D(true);
 
             addEventListener(Event.ADDED, onAddedChild);
             addEventListener(Event.REMOVED, onRemovedChild);
         }
 
         /** @inheritDoc */
-        override public function render(painter:Painter):void
+        public override function render(support:RenderSupport, parentAlpha:Number):void
         {
-            if (_is2D) super.render(painter);
+            if (is2D) super.render(support, parentAlpha);
             else
             {
-                painter.finishMeshBatch();
-                painter.pushState();
-                painter.state.transformModelviewMatrix3D(transformationMatrix3D);
+                support.finishQuadBatch();
+                support.pushMatrix3D();
+                support.transformMatrix3D(this);
 
-                super.render(painter);
+                super.render(support, parentAlpha);
 
-                painter.finishMeshBatch();
-                painter.excludeFromCache(this);
-                painter.popState();
+                support.finishQuadBatch();
+                support.popMatrix3D();
             }
         }
 
         /** @inheritDoc */
-        override public function hitTest(localPoint:Point):DisplayObject
+        public override function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
         {
-            if (_is2D) return super.hitTest(localPoint);
+            if (is2D) return super.hitTest(localPoint, forTouch);
             else
             {
-                if (!visible || !touchable) return null;
+                if (forTouch && (!visible || !touchable))
+                    return null;
 
                 // We calculate the interception point between the 3D plane that is spawned up
                 // by this sprite3D and the straight line between the camera and the hit point.
@@ -132,19 +132,8 @@ package starling.display
                 MatrixUtil.transformCoords3D(sHelperMatrix, localPoint.x, localPoint.y, 0, sHelperPointAlt);
                 MathUtil.intersectLineWithXYPlane(sHelperPoint, sHelperPointAlt, localPoint);
 
-                return super.hitTest(localPoint);
+                return super.hitTest(localPoint, forTouch);
             }
-        }
-
-        /** @private */
-        override public function setRequiresRedraw():void
-        {
-            _is2D = _z > -E && _z < E &&
-                    _rotationX > -E && _rotationX < E &&
-                    _rotationY > -E && _rotationY < E &&
-                    _pivotZ > -E && _pivotZ < E;
-
-            super.setRequiresRedraw();
         }
 
         // helpers
@@ -186,23 +175,33 @@ package starling.display
             var pivotY:Number = this.pivotY;
             var rotationZ:Number = this.rotation;
 
-            _transformationMatrix3D.identity();
+            mTransformationMatrix3D.identity();
 
-            if (scaleX != 1.0 || scaleY != 1.0 || _scaleZ != 1.0)
-                _transformationMatrix3D.appendScale(scaleX || E , scaleY || E, _scaleZ || E);
-            if (_rotationX != 0.0)
-                _transformationMatrix3D.appendRotation(rad2deg(_rotationX), Vector3D.X_AXIS);
-            if (_rotationY != 0.0)
-                _transformationMatrix3D.appendRotation(rad2deg(_rotationY), Vector3D.Y_AXIS);
+            if (scaleX != 1.0 || scaleY != 1.0 || mScaleZ != 1.0)
+                mTransformationMatrix3D.appendScale(scaleX || E , scaleY || E, mScaleZ || E);
+            if (mRotationX != 0.0)
+                mTransformationMatrix3D.appendRotation(rad2deg(mRotationX), Vector3D.X_AXIS);
+            if (mRotationY != 0.0)
+                mTransformationMatrix3D.appendRotation(rad2deg(mRotationY), Vector3D.Y_AXIS);
             if (rotationZ != 0.0)
-                _transformationMatrix3D.appendRotation(rad2deg( rotationZ), Vector3D.Z_AXIS);
-            if (x != 0.0 || y != 0.0 || _z != 0.0)
-                _transformationMatrix3D.appendTranslation(x, y, _z);
-            if (pivotX != 0.0 || pivotY != 0.0 || _pivotZ != 0.0)
-                _transformationMatrix3D.prependTranslation(-pivotX, -pivotY, -_pivotZ);
+                mTransformationMatrix3D.appendRotation(rad2deg( rotationZ), Vector3D.Z_AXIS);
+            if (x != 0.0 || y != 0.0 || mZ != 0.0)
+                mTransformationMatrix3D.appendTranslation(x, y, mZ);
+            if (pivotX != 0.0 || pivotY != 0.0 || mPivotZ != 0.0)
+                mTransformationMatrix3D.prependTranslation(-pivotX, -pivotY, -mPivotZ);
 
-            if (_is2D) MatrixUtil.convertTo2D(_transformationMatrix3D, _transformationMatrix);
-            else       _transformationMatrix.identity();
+            if (is2D) MatrixUtil.convertTo2D(mTransformationMatrix3D, mTransformationMatrix);
+            else      mTransformationMatrix.identity();
+        }
+
+        /** Indicates if the object can be represented by a 2D transformation. */
+        [Inline]
+        private final function get is2D():Boolean
+        {
+            return mZ > -E && mZ < E &&
+                mRotationX > -E && mRotationX < E &&
+                mRotationY > -E && mRotationY < E &&
+                mPivotZ > -E && mPivotZ < E;
         }
 
         // properties
@@ -212,110 +211,101 @@ package starling.display
          *  zero). Otherwise, the identity matrix. CAUTION: not a copy, but the actual object! */
         public override function get transformationMatrix():Matrix
         {
-            if (_transformationChanged)
+            if (mTransformationChanged)
             {
                 updateMatrices();
-                _transformationChanged = false;
+                mTransformationChanged = false;
             }
 
-            return _transformationMatrix;
+            return mTransformationMatrix;
         }
 
         public override function set transformationMatrix(value:Matrix):void
         {
             super.transformationMatrix = value;
-            _rotationX = _rotationY = _pivotZ = _z = 0;
-            _transformationChanged = true;
+            mRotationX = mRotationY = mPivotZ = mZ = 0;
+            mTransformationChanged = true;
         }
 
         /**  The 3D transformation matrix of the object relative to its parent.
          *   CAUTION: not a copy, but the actual object! */
         public override function get transformationMatrix3D():Matrix3D
         {
-            if (_transformationChanged)
+            if (mTransformationChanged)
             {
                 updateMatrices();
-                _transformationChanged = false;
+                mTransformationChanged = false;
             }
 
-            return _transformationMatrix3D;
+            return mTransformationMatrix3D;
         }
 
         /** @inheritDoc */
         public override function set x(value:Number):void
         {
             super.x = value;
-            _transformationChanged = true;
+            mTransformationChanged = true;
         }
 
         /** @inheritDoc */
         public override function set y(value:Number):void
         {
             super.y = value;
-            _transformationChanged = true;
+            mTransformationChanged = true;
         }
 
         /** The z coordinate of the object relative to the local coordinates of the parent.
          *  The z-axis points away from the camera, i.e. positive z-values will move the object further
          *  away from the viewer. */
-        public function get z():Number { return _z; }
+        public function get z():Number { return mZ; }
         public function set z(value:Number):void
         {
-            _z = value;
-            _transformationChanged = true;
-            setRequiresRedraw();
+            mZ = value;
+            mTransformationChanged = true;
         }
 
         /** @inheritDoc */
         public override function set pivotX(value:Number):void
         {
              super.pivotX = value;
-             _transformationChanged = true;
+             mTransformationChanged = true;
         }
 
         /** @inheritDoc */
         public override function set pivotY(value:Number):void
         {
              super.pivotY = value;
-             _transformationChanged = true;
+             mTransformationChanged = true;
         }
 
         /** The z coordinate of the object's origin in its own coordinate space (default: 0). */
-        public function get pivotZ():Number { return _pivotZ; }
+        public function get pivotZ():Number { return mPivotZ; }
         public function set pivotZ(value:Number):void
         {
-            _pivotZ = value;
-            _transformationChanged = true;
-            setRequiresRedraw();
+            mPivotZ = value;
+            mTransformationChanged = true;
         }
 
         /** @inheritDoc */
         public override function set scaleX(value:Number):void
         {
             super.scaleX = value;
-            _transformationChanged = true;
+            mTransformationChanged = true;
         }
 
         /** @inheritDoc */
         public override function set scaleY(value:Number):void
         {
             super.scaleY = value;
-            _transformationChanged = true;
+            mTransformationChanged = true;
         }
 
         /** The depth scale factor. '1' means no scale, negative values flip the object. */
-        public function get scaleZ():Number { return _scaleZ; }
+        public function get scaleZ():Number { return mScaleZ; }
         public function set scaleZ(value:Number):void
         {
-            _scaleZ = value;
-            _transformationChanged = true;
-            setRequiresRedraw();
-        }
-
-        /** @private */
-        override public function set scale(value:Number):void
-        {
-            scaleX = scaleY = scaleZ = value;
+            mScaleZ = value;
+            mTransformationChanged = true;
         }
 
         /** @private */
@@ -324,7 +314,7 @@ package starling.display
             throw new Error("3D objects do not support skewing");
 
             // super.skewX = value;
-            // _orientationChanged = true;
+            // mOrientationChanged = true;
         }
 
         /** @private */
@@ -333,7 +323,7 @@ package starling.display
             throw new Error("3D objects do not support skewing");
 
             // super.skewY = value;
-            // _orientationChanged = true;
+            // mOrientationChanged = true;
         }
 
         /** The rotation of the object about the z axis, in radians.
@@ -341,27 +331,25 @@ package starling.display
         public override function set rotation(value:Number):void
         {
             super.rotation = value;
-            _transformationChanged = true;
+            mTransformationChanged = true;
         }
 
         /** The rotation of the object about the x axis, in radians.
          *  (In Starling, all angles are measured in radians.) */
-        public function get rotationX():Number { return _rotationX; }
+        public function get rotationX():Number { return mRotationX; }
         public function set rotationX(value:Number):void
         {
-            _rotationX = MathUtil.normalizeAngle(value);
-            _transformationChanged = true;
-            setRequiresRedraw();
+            mRotationX = MathUtil.normalizeAngle(value);
+            mTransformationChanged = true;
         }
 
         /** The rotation of the object about the y axis, in radians.
          *  (In Starling, all angles are measured in radians.) */
-        public function get rotationY():Number { return _rotationY; }
+        public function get rotationY():Number { return mRotationY; }
         public function set rotationY(value:Number):void
         {
-            _rotationY = MathUtil.normalizeAngle(value);
-            _transformationChanged = true;
-            setRequiresRedraw();
+            mRotationY = MathUtil.normalizeAngle(value);
+            mTransformationChanged = true;
         }
 
         /** The rotation of the object about the z axis, in radians.

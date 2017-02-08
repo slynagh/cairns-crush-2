@@ -10,12 +10,16 @@
 
 package starling.events
 {
+    import flash.geom.Matrix;
     import flash.geom.Point;
-
+    
+    import starling.core.starling_internal;
     import starling.display.DisplayObject;
-    import starling.utils.StringUtil;
+    import starling.utils.formatString;
+    
+    use namespace starling_internal;
 
-    /** A Touch object contains information about the presence or movement of a finger
+    /** A Touch object contains information about the presence or movement of a finger 
      *  or the mouse on the screen.
      *  
      *  <p>You receive objects of this type from a TouchEvent. When such an event is triggered,
@@ -35,20 +39,20 @@ package starling.events
      */  
     public class Touch
     {
-        private var _id:int;
-        private var _globalX:Number;
-        private var _globalY:Number;
-        private var _previousGlobalX:Number;
-        private var _previousGlobalY:Number;
-        private var _tapCount:int;
-        private var _phase:String;
-        private var _target:DisplayObject;
-        private var _timestamp:Number;
-        private var _pressure:Number;
-        private var _width:Number;
-        private var _height:Number;
-        private var _cancelled:Boolean;
-        private var _bubbleChain:Vector.<EventDispatcher>;
+        private var mID:int;
+        private var mGlobalX:Number;
+        private var mGlobalY:Number;
+        private var mPreviousGlobalX:Number;
+        private var mPreviousGlobalY:Number;
+        private var mTapCount:int;
+        private var mPhase:String;
+        private var mTarget:DisplayObject;
+        private var mTimestamp:Number;
+        private var mPressure:Number;
+        private var mWidth:Number;
+        private var mHeight:Number;
+        private var mCancelled:Boolean;
+        private var mBubbleChain:Vector.<EventDispatcher>;
         
         /** Helper object. */
         private static var sHelperPoint:Point = new Point();
@@ -56,74 +60,74 @@ package starling.events
         /** Creates a new Touch object. */
         public function Touch(id:int)
         {
-            _id = id;
-            _tapCount = 0;
-            _phase = TouchPhase.HOVER;
-            _pressure = _width = _height = 1.0;
-            _bubbleChain = new <EventDispatcher>[];
+            mID = id;
+            mTapCount = 0;
+            mPhase = TouchPhase.HOVER;
+            mPressure = mWidth = mHeight = 1.0;
+            mBubbleChain = new <EventDispatcher>[];
         }
         
         /** Converts the current location of a touch to the local coordinate system of a display 
-         *  object. If you pass an <code>out</code>-point, the result will be stored in this point
-         *  instead of creating a new object.*/
-        public function getLocation(space:DisplayObject, out:Point=null):Point
+         *  object. If you pass a 'resultPoint', the result will be stored in this point instead 
+         *  of creating a new object.*/
+        public function getLocation(space:DisplayObject, resultPoint:Point=null):Point
         {
-            sHelperPoint.setTo(_globalX, _globalY);
-            return space.globalToLocal(sHelperPoint, out);
+            sHelperPoint.setTo(mGlobalX, mGlobalY);
+            return space.globalToLocal(sHelperPoint, resultPoint);
         }
         
         /** Converts the previous location of a touch to the local coordinate system of a display 
-         *  object. If you pass an <code>out</code>-point, the result will be stored in this point
-         *  instead of creating a new object.*/
-        public function getPreviousLocation(space:DisplayObject, out:Point=null):Point
+         *  object. If you pass a 'resultPoint', the result will be stored in this point instead 
+         *  of creating a new object.*/
+        public function getPreviousLocation(space:DisplayObject, resultPoint:Point=null):Point
         {
-            sHelperPoint.setTo(_previousGlobalX, _previousGlobalY);
-            return space.globalToLocal(sHelperPoint, out);
+            sHelperPoint.setTo(mPreviousGlobalX, mPreviousGlobalY);
+            return space.globalToLocal(sHelperPoint, resultPoint);
         }
         
         /** Returns the movement of the touch between the current and previous location. 
-         *  If you pass an <code>out</code>-point, the result will be stored in this point instead
+         *  If you pass a 'resultPoint', the result will be stored in this point instead 
          *  of creating a new object. */ 
-        public function getMovement(space:DisplayObject, out:Point=null):Point
+        public function getMovement(space:DisplayObject, resultPoint:Point=null):Point
         {
-            if (out == null) out = new Point();
-            getLocation(space, out);
-            var x:Number = out.x;
-            var y:Number = out.y;
-            getPreviousLocation(space, out);
-            out.setTo(x - out.x, y - out.y);
-            return out;
+            if (resultPoint == null) resultPoint = new Point();
+            getLocation(space, resultPoint);
+            var x:Number = resultPoint.x;
+            var y:Number = resultPoint.y;
+            getPreviousLocation(space, resultPoint);
+            resultPoint.setTo(x - resultPoint.x, y - resultPoint.y);
+            return resultPoint;
         }
         
         /** Indicates if the target or one of its children is touched. */ 
         public function isTouching(target:DisplayObject):Boolean
         {
-            return _bubbleChain.indexOf(target) != -1;
+            return mBubbleChain.indexOf(target) != -1;
         }
         
         /** Returns a description of the object. */
         public function toString():String
         {
-            return StringUtil.format("[Touch {0}: globalX={1}, globalY={2}, phase={3}]",
-                                     _id, _globalX, _globalY, _phase);
+            return formatString("Touch {0}: globalX={1}, globalY={2}, phase={3}",
+                                mID, mGlobalX, mGlobalY, mPhase);
         }
         
         /** Creates a clone of the Touch object. */
         public function clone():Touch
         {
-            var clone:Touch = new Touch(_id);
-            clone._globalX = _globalX;
-            clone._globalY = _globalY;
-            clone._previousGlobalX = _previousGlobalX;
-            clone._previousGlobalY = _previousGlobalY;
-            clone._phase = _phase;
-            clone._tapCount = _tapCount;
-            clone._timestamp = _timestamp;
-            clone._pressure = _pressure;
-            clone._width = _width;
-            clone._height = _height;
-            clone._cancelled = _cancelled;
-            clone.target = _target;
+            var clone:Touch = new Touch(mID);
+            clone.mGlobalX = mGlobalX;
+            clone.mGlobalY = mGlobalY;
+            clone.mPreviousGlobalX = mPreviousGlobalX;
+            clone.mPreviousGlobalY = mPreviousGlobalY;
+            clone.mPhase = mPhase;
+            clone.mTapCount = mTapCount;
+            clone.mTimestamp = mTimestamp;
+            clone.mPressure = mPressure;
+            clone.mWidth = mWidth;
+            clone.mHeight = mHeight;
+            clone.mCancelled = mCancelled;
+            clone.target = mTarget;
             return clone;
         }
         
@@ -131,95 +135,95 @@ package starling.events
         
         private function updateBubbleChain():void
         {
-            if (_target)
+            if (mTarget)
             {
                 var length:int = 1;
-                var element:DisplayObject = _target;
+                var element:DisplayObject = mTarget;
                 
-                _bubbleChain.length = 1;
-                _bubbleChain[0] = element;
+                mBubbleChain.length = 1;
+                mBubbleChain[0] = element;
                 
                 while ((element = element.parent) != null)
-                    _bubbleChain[int(length++)] = element;
+                    mBubbleChain[int(length++)] = element;
             }
             else
             {
-                _bubbleChain.length = 0;
+                mBubbleChain.length = 0;
             }
         }
         
         // properties
         
         /** The identifier of a touch. '0' for mouse events, an increasing number for touches. */
-        public function get id():int { return _id; }
+        public function get id():int { return mID; }
         
         /** The previous x-position of the touch in stage coordinates. */
-        public function get previousGlobalX():Number { return _previousGlobalX; }
+        public function get previousGlobalX():Number { return mPreviousGlobalX; }
         
         /** The previous y-position of the touch in stage coordinates. */
-        public function get previousGlobalY():Number { return _previousGlobalY; }
+        public function get previousGlobalY():Number { return mPreviousGlobalY; }
 
         /** The x-position of the touch in stage coordinates. If you change this value,
          *  the previous one will be moved to "previousGlobalX". */
-        public function get globalX():Number { return _globalX; }
+        public function get globalX():Number { return mGlobalX; }
         public function set globalX(value:Number):void
         {
-            _previousGlobalX = _globalX != _globalX ? value : _globalX; // isNaN check
-            _globalX = value;
+            mPreviousGlobalX = mGlobalX != mGlobalX ? value : mGlobalX; // isNaN check
+            mGlobalX = value;
         }
 
         /** The y-position of the touch in stage coordinates. If you change this value,
          *  the previous one will be moved to "previousGlobalY". */
-        public function get globalY():Number { return _globalY; }
+        public function get globalY():Number { return mGlobalY; }
         public function set globalY(value:Number):void
         {
-            _previousGlobalY = _globalY != _globalY ? value : _globalY; // isNaN check
-            _globalY = value;
+            mPreviousGlobalY = mGlobalY != mGlobalY ? value : mGlobalY; // isNaN check
+            mGlobalY = value;
         }
         
         /** The number of taps the finger made in a short amount of time. Use this to detect 
          *  double-taps / double-clicks, etc. */ 
-        public function get tapCount():int { return _tapCount; }
-        public function set tapCount(value:int):void { _tapCount = value; }
+        public function get tapCount():int { return mTapCount; }
+        public function set tapCount(value:int):void { mTapCount = value; }
         
         /** The current phase the touch is in. @see TouchPhase */
-        public function get phase():String { return _phase; }
-        public function set phase(value:String):void { _phase = value; }
+        public function get phase():String { return mPhase; }
+        public function set phase(value:String):void { mPhase = value; }
         
         /** The display object at which the touch occurred. */
-        public function get target():DisplayObject { return _target; }
+        public function get target():DisplayObject { return mTarget; }
         public function set target(value:DisplayObject):void
         {
-            if (_target != value)
+            if (mTarget != value)
             {
-                _target = value;
+                mTarget = value;
                 updateBubbleChain();
             }
         }
         
         /** The moment the touch occurred (in seconds since application start). */
-        public function get timestamp():Number { return _timestamp; }
-        public function set timestamp(value:Number):void { _timestamp = value; }
+        public function get timestamp():Number { return mTimestamp; }
+        public function set timestamp(value:Number):void { mTimestamp = value; }
         
         /** A value between 0.0 and 1.0 indicating force of the contact with the device. 
          *  If the device does not support detecting the pressure, the value is 1.0. */ 
-        public function get pressure():Number { return _pressure; }
-        public function set pressure(value:Number):void { _pressure = value; }
+        public function get pressure():Number { return mPressure; }
+        public function set pressure(value:Number):void { mPressure = value; }
         
         /** Width of the contact area. 
          *  If the device does not support detecting the pressure, the value is 1.0. */
-        public function get width():Number { return _width; }
-        public function set width(value:Number):void { _width = value; }
+        public function get width():Number { return mWidth; }
+        public function set width(value:Number):void { mWidth = value; }
         
         /** Height of the contact area. 
          *  If the device does not support detecting the pressure, the value is 1.0. */
-        public function get height():Number { return _height; }
-        public function set height(value:Number):void { _height = value; }
+        public function get height():Number { return mHeight; }
+        public function set height(value:Number):void { mHeight = value; }
 
         /** Indicates if the touch has been cancelled, which may happen when the app moves into
          *  the background ('Event.DEACTIVATE'). @default false */
-        public function get cancelled():Boolean { return _cancelled; }
-        public function set cancelled(value:Boolean):void { _cancelled = value; }
+        public function get cancelled():Boolean { return mCancelled; }
+        public function set cancelled(value:Boolean):void { mCancelled = value; }
 
         // internal methods
         
@@ -228,13 +232,13 @@ package starling.events
          *  a target is set). */
         internal function dispatchEvent(event:TouchEvent):void
         {
-            if (_target) event.dispatch(_bubbleChain);
+            if (mTarget) event.dispatch(mBubbleChain);
         }
         
         /** @private */
         internal function get bubbleChain():Vector.<EventDispatcher>
         {
-            return _bubbleChain.concat();
+            return mBubbleChain.concat();
         }
     }
 }

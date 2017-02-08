@@ -11,12 +11,11 @@
 package starling.text
 {
     import flash.display.BitmapData;
-    import flash.display3D.Context3DTextureFormat;
     import flash.geom.Rectangle;
     import flash.utils.ByteArray;
-
+    
     import starling.textures.Texture;
-
+    
     /** @private
      *  This class contains constants for the 'MINI' bitmap font. It's done that way to avoid
      *  a dependency on the 'mx.core' library (which is required for the 'Embed' statement).
@@ -277,8 +276,7 @@ package starling.text
         public static function get texture():Texture
         {
             var bitmapData:BitmapData = getBitmapData();
-            var format:String = Context3DTextureFormat.BGRA_PACKED;
-            var texture:Texture = Texture.fromBitmapData(bitmapData, false, false, 1, format);
+            var texture:Texture = Texture.fromBitmapData(bitmapData, false);
             bitmapData.dispose();
             bitmapData = null;
 

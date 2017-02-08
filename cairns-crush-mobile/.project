@@ -28,6 +28,16 @@
 			<type>2</type>
 			<locationURI>PROJECT_MASTER/cairns-crush-common/src</locationURI>
 		</link>
+		<link>
+			<name>[source path] assets</name>
+			<type>2</type>
+			<locationURI>PROJECT_MASTER/cairns-crush-common/assets</locationURI>
+		</link>
+		<link>
+			<name>[source path] src</name>
+			<type>2</type>
+			<locationURI>PROJECT_MASTER/cairns-crush-common/src</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>

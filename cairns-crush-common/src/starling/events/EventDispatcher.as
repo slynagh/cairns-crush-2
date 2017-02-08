@@ -11,10 +11,10 @@
 package starling.events
 {
     import flash.utils.Dictionary;
-
+    
     import starling.core.starling_internal;
     import starling.display.DisplayObject;
-
+    
     use namespace starling_internal;
     
     /** The EventDispatcher class is the base class for all classes that dispatch events. 
@@ -37,8 +37,7 @@ package starling.events
      */
     public class EventDispatcher
     {
-        private var _eventListeners:Dictionary;
-        private var _eventStack:Vector.<String> = new <String>[];
+        private var mEventListeners:Dictionary;
         
         /** Helper object. */
         private static var sBubbleChains:Array = [];
@@ -50,12 +49,12 @@ package starling.events
         /** Registers an event listener at a certain object. */
         public function addEventListener(type:String, listener:Function):void
         {
-            if (_eventListeners == null)
-                _eventListeners = new Dictionary();
+            if (mEventListeners == null)
+                mEventListeners = new Dictionary();
             
-            var listeners:Vector.<Function> = _eventListeners[type] as Vector.<Function>;
+            var listeners:Vector.<Function> = mEventListeners[type] as Vector.<Function>;
             if (listeners == null)
-                _eventListeners[type] = new <Function>[listener];
+                mEventListeners[type] = new <Function>[listener];
             else if (listeners.indexOf(listener) == -1) // check for duplicates
                 listeners[listeners.length] = listener; // avoid 'push'
         }
@@ -63,9 +62,9 @@ package starling.events
         /** Removes an event listener from the object. */
         public function removeEventListener(type:String, listener:Function):void
         {
-            if (_eventListeners)
+            if (mEventListeners)
             {
-                var listeners:Vector.<Function> = _eventListeners[type] as Vector.<Function>;
+                var listeners:Vector.<Function> = mEventListeners[type] as Vector.<Function>;
                 var numListeners:int = listeners ? listeners.length : 0;
 
                 if (numListeners > 0)
@@ -77,19 +76,12 @@ package starling.events
 
                     if (index != -1)
                     {
-                        if(_eventStack.indexOf(type) == -1)
-                        {
-                            listeners.removeAt(index);
-                        }
-                        else
-                        {
-                            var restListeners:Vector.<Function> = listeners.slice(0, index);
+                        var restListeners:Vector.<Function> = listeners.slice(0, index);
 
-                            for (var i:int=index+1; i<numListeners; ++i)
-                                restListeners[i-1] = listeners[i];
+                        for (var i:int=index+1; i<numListeners; ++i)
+                            restListeners[i-1] = listeners[i];
 
-                            _eventListeners[type] = restListeners;
-                        }
+                        mEventListeners[type] = restListeners;
                     }
                 }
             }
@@ -99,10 +91,10 @@ package starling.events
          *  Be careful when removing all event listeners: you never know who else was listening. */
         public function removeEventListeners(type:String=null):void
         {
-            if (type && _eventListeners)
-                delete _eventListeners[type];
+            if (type && mEventListeners)
+                delete mEventListeners[type];
             else
-                _eventListeners = null;
+                mEventListeners = null;
         }
         
         /** Dispatches an event to all objects that have registered listeners for its type. 
@@ -113,7 +105,7 @@ package starling.events
         {
             var bubbles:Boolean = event.bubbles;
             
-            if (!bubbles && (_eventListeners == null || !(event.type in _eventListeners)))
+            if (!bubbles && (mEventListeners == null || !(event.type in mEventListeners)))
                 return; // no need to do anything
             
             // we save the current target and restore it later;
@@ -134,14 +126,13 @@ package starling.events
          *  method uses this method internally. */
         internal function invokeEvent(event:Event):Boolean
         {
-            var listeners:Vector.<Function> = _eventListeners ?
-                _eventListeners[event.type] as Vector.<Function> : null;
+            var listeners:Vector.<Function> = mEventListeners ?
+                mEventListeners[event.type] as Vector.<Function> : null;
             var numListeners:int = listeners == null ? 0 : listeners.length;
             
             if (numListeners)
             {
                 event.setCurrentTarget(this);
-                _eventStack[_eventStack.length] = event.type;
                 
                 // we can enumerate directly over the vector, because:
                 // when somebody modifies the list while we're looping, "addEventListener" is not
@@ -159,8 +150,6 @@ package starling.events
                     if (event.stopsImmediatePropagation)
                         return true;
                 }
-
-                _eventStack.pop();
                 
                 return event.stopsPropagation;
             }
@@ -209,18 +198,11 @@ package starling.events
             }
         }
         
-        /** If called with one argument, figures out if there are any listeners registered for
-         *  the given event type. If called with two arguments, also determines if a specific
-         *  listener is registered. */
-        public function hasEventListener(type:String, listener:Function=null):Boolean
+        /** Returns if there are listeners registered for a certain event type. */
+        public function hasEventListener(type:String):Boolean
         {
-            var listeners:Vector.<Function> = _eventListeners ? _eventListeners[type] : null;
-            if (listeners == null) return false;
-            else
-            {
-                if (listener != null) return listeners.indexOf(listener) != -1;
-                else return listeners.length != 0;
-            }
+            var listeners:Vector.<Function> = mEventListeners ? mEventListeners[type] : null;
+            return listeners ? listeners.length != 0 : false;
         }
     }
 }
