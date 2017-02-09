@@ -1,9 +1,9 @@
 package game.utils
 {
-	import flash.media.AudioPlaybackMode;
+	//import flash.media.AudioPlaybackMode;
 	import flash.media.Sound;
 	import flash.media.SoundChannel;
-	import flash.media.SoundMixer;
+	//import flash.media.SoundMixer;
 	import flash.media.SoundTransform;
 	import flash.utils.getTimer;
 	
@@ -16,7 +16,9 @@ package game.utils
 		{
 			if(_instance) throw new Error("There can only be one instance ");
 			_instance = this ;
-			SoundMixer.audioPlaybackMode = AudioPlaybackMode.AMBIENT;
+
+			//SoundMixer.audioPlaybackMode = AudioPlaybackMode.AMBIENT;//AIR only - moved to CairnsCrushMobile.as
+
 		}
 		
 		private static var _instance:SoundManager;

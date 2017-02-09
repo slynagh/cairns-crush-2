@@ -6,6 +6,8 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
+	import flash.media.AudioPlaybackMode;
+	import flash.media.SoundMixer;
 	import flash.system.Capabilities;
 	
 	import game.core.App;
@@ -28,7 +30,7 @@ package
 			stage.color=0;
 			stage.frameRate=60;
 			
-			//Starling.handleLostContext = isAndroid ; //Deprecated in Starling 2.0!!
+			Starling.handleLostContext = isAndroid ; //Deprecated in Starling 2.0!!
 			Starling.multitouchEnabled = false ;
 			
 			
@@ -59,6 +61,8 @@ package
 			_starl.showStats = true ;
 			_starl.showStatsAt("left","bottom");
 			_starl.addEventListener("context3DCreate" , onContextCreated);
+			
+			SoundMixer.audioPlaybackMode = AudioPlaybackMode.AMBIENT;
 		}
 		
 		private function onContextCreated():void
