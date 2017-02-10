@@ -4,13 +4,13 @@ package
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.events.Event;
 	import flash.geom.Rectangle;
 	
+	import game.comm.GameData;
 	import game.core.App;
 	
 	import starling.core.Starling;
-	import starling.events.ResizeEvent;
-	import starling.events.Event;
 	import starling.utils.RectangleUtil;
 	import starling.utils.ScaleMode;
 	
@@ -71,26 +71,21 @@ package
 			_starling.removeEventListener("context3DCreate" , onContextCreated);
 			_starling.start();
 			
-			_starling.stage.addEventListener(ResizeEvent.RESIZE, onResize);  //?? correct?
+			stage.addEventListener(Event.RESIZE, onResize);
 		}
 		
-		
-		
-		private function onResize(e:ResizeEvent):void
+		private function onResize(e:flash.events.Event):void
 		{
-			//TODO: make it work!
-			trace ("resize");
-			// set rectangle dimensions for viewPort:
-			var viewPortRectangle:Rectangle = new Rectangle();
-			viewPortRectangle.width = e.width; viewPortRectangle.height = e.height;
+			var stageW:int = stage.stageWidth;
+			var stageH:int = stage.stageHeight;
+			var viewPort:Rectangle = RectangleUtil.fit(
+				new Rectangle(0, 0, GameData.GAME_WIDTH, GameData.GAME_HEIGHT),
+				new Rectangle(0, 0, stageW, stageH),
+				ScaleMode.SHOW_ALL,false);
+			
 			
 			// resize the viewport:
-			//Starling.current.viewPort = viewPortRectangle;
-			Starling.current.viewPort = viewPortRectangle;
-			
-			// assign the new stage width and height:
-			Starling.current.stage.stageWidth = e.width;
-			Starling.current.stage.stageHeight = e.height;
+			_starling.viewPort = viewPort;
 		}
 	}
 }
