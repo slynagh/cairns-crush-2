@@ -6,6 +6,7 @@ package game.core
 	import starling.text.BitmapFont;
 	import starling.text.TextField;
 	import starling.textures.Texture; 
+	import game.core.scenes.HighScoresScene;
 	
 	public class App extends Sprite
 	{
@@ -52,7 +53,8 @@ package game.core
 			_sceneContainer = new Sprite();
 			addChild(_sceneContainer);
 			
-			showScene(new MainScene());
+			//showScene(new MainScene());
+			showScene(new HighScoresScene());
 		}
 		
 		public function showScene( scene:Sprite):void

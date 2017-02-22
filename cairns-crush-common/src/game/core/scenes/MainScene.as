@@ -1,4 +1,4 @@
-package game.core
+package game.core.scenes
 {
 	import flash.filters.GlowFilter;
 	import flash.utils.setTimeout;
@@ -18,6 +18,7 @@ package game.core
 	import starling.events.Event;
 	import starling.text.TextField;
 	import starling.utils.deg2rad;
+	import game.core.App;
 	
 	public class MainScene extends Sprite
 	{
@@ -98,7 +99,7 @@ package game.core
 			addChild(txt);
 			
 			
-//			this.addEventListener(EnterFrameEvent.ENTER_FRAME , update );
+			this.addEventListener(EnterFrameEvent.ENTER_FRAME , update );
 			btnPlay.addEventListener(Event.TRIGGERED , onPlay);
 		}
 		

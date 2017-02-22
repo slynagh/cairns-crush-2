@@ -1,4 +1,4 @@
-package game.core
+package game.core.scenes
 {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -32,6 +32,7 @@ package game.core
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 	import starling.utils.deg2rad;
+	import game.core.App;
 	
 	public class GameScene extends Sprite
 	{

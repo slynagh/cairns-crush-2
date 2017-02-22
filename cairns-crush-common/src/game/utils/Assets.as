@@ -24,6 +24,19 @@ package game.utils
 		[Embed(source="/../assets/UI_SD.xml",mimeType="application/octet-stream")]
 		public static const UI_SD_XML:Class;
 		
+		/*
+		Fonts
+		*/
+		[Embed(fontName="JennaSue", source="/../assets/fonts/JennaSue.ttf", mimeType="application/x-font-truetype", embedAsCFF="false")]
+		public static const JennaSue:Class;
+		
+		[Embed(fontName="OpenSans-Light", fontWeight="normal", fontFamily="OpenSans", source="/../assets/fonts/OpenSans-Light.ttf", mimeType="application/x-font-truetype", embedAsCFF="false")]
+		public static const OpensSansLight:Class;
+		
+		[Embed(fontName="OpenSans-Semibold", fontWeight="bold", fontFamily="OpenSans", source="/../assets/fonts/OpenSans-Semibold.ttf", mimeType="application/x-font-truetype", embedAsCFF="false")]
+		public static const OpensSansSemiBold:Class;
+		
+		
 		private var _textures:Dictionary = new Dictionary();
 		private var _gemsAtlas:TextureAtlas ;
 		private var _uiAtlas:TextureAtlas ;
