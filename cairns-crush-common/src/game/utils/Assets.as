@@ -14,6 +14,9 @@ package game.utils
 		}
 		//==========================================
 		
+		/*
+		Atlases
+		*/
 		[Embed(source="/../assets/Gems_HD.png")]
 		public static const Gems_HD:Class
 		[Embed(source="/../assets/Gems_HD.xml",mimeType="application/octet-stream")]
@@ -23,6 +26,19 @@ package game.utils
 		public static const UI_SD:Class;
 		[Embed(source="/../assets/UI_SD.xml",mimeType="application/octet-stream")]
 		public static const UI_SD_XML:Class;
+		
+		/*
+		images
+		*/
+		[Embed(source="/../assets/ui/BtnAbout.png")]
+		public static const BtnAbout:Class;
+		[Embed(source="/../assets/ui/BtnHighScores.png")]
+		public static const BtnHighScores:Class;
+		[Embed(source="/../assets/ui/BtnPlay.png")]
+		public static const BtnPlay:Class;
+		
+		
+		
 		
 		/*
 		Fonts
