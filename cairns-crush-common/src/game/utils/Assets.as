@@ -1,5 +1,6 @@
 package game.utils
 {
+	import flash.display.Bitmap;
 	import flash.utils.Dictionary;
 	
 	import starling.textures.Texture;
@@ -36,7 +37,14 @@ package game.utils
 		public static const BtnHighScores:Class;
 		[Embed(source="/../assets/ui/BtnPlay.png")]
 		public static const BtnPlay:Class;
-		
+		[Embed(source="/../assets/logo_main.png")]
+		public static const LogoMain:Class;
+		[Embed(source="/../assets/canvas-texture.jpg")]
+		public static const CanvasTexture:Class;
+		[Embed(source="/../assets/canvas-texture-soft.jpg")]
+		public static const CanvasTextureSoft:Class;
+		[Embed(source="/../assets/canvas-texture-soft-vignette.jpg")]
+		public static const CanvasTextureSoftVignette:Class;
 		
 		
 		
@@ -52,10 +60,9 @@ package game.utils
 		[Embed(fontName="OpenSans-Semibold", fontWeight="bold", fontFamily="OpenSans", source="/../assets/fonts/OpenSans-Semibold.ttf", mimeType="application/x-font-truetype", embedAsCFF="false")]
 		public static const OpensSansSemiBold:Class;
 		
-		
-		private var _textures:Dictionary = new Dictionary();
-		private var _gemsAtlas:TextureAtlas ;
-		private var _uiAtlas:TextureAtlas ;
+		private static var _textures:Dictionary = new Dictionary();
+		private static var _gemsAtlas:TextureAtlas ;
+		private static var _uiAtlas:TextureAtlas ;
 		
 		public function Assets()
 		{
@@ -63,7 +70,6 @@ package game.utils
 			
 			_uiAtlas = new TextureAtlas( Texture.fromBitmap( new UI_SD(),false)  , XML( new UI_SD_XML()) );
 		}
-		
 		
 		public function getGemsTexture( name:String ):Texture
 		{
@@ -83,5 +89,71 @@ package game.utils
 			}
 			return _textures[name] as Texture ;
 		}
+		
+		/**
+		 * Returns the Texture atlas instance.
+		 * @return the TextureAtlas instance
+		 */
+		public static function getAtlas(atlasId:String):TextureAtlas
+		{
+			var textureAtlas:TextureAtlas;
+			var texture:Texture;
+			var xml:XML;
+			
+			switch (atlasId)
+			{
+				case "Gems":
+					if (_gemsAtlas == null)
+					{
+						texture = getTexture("Gems_HD");
+						xml = XML(new Gems_HD_XML());
+						_gemsAtlas=new TextureAtlas(texture, xml);
+					}
+					textureAtlas =  _gemsAtlas;
+					break;
+				case "UI":
+					if (_uiAtlas == null)
+					{
+						texture = getTexture("UI_SD");
+						xml = XML(new UI_SD_XML());
+						_uiAtlas=new TextureAtlas(texture, xml);
+					}
+					textureAtlas =  _uiAtlas;
+					break;
+				
+				default:
+					throw new Error("No atlasID passed to function getAtlas");
+					/*
+					if (gameTextureAtlas == null)
+					{
+						texture = getTexture("AtlasTextureGame");
+						xml = XML(new AtlasXmlGame());
+						gameTextureAtlas=new TextureAtlas(texture, xml);
+					}
+					textureAtlas =  gameTextureAtlas;
+					*/
+					
+			}
+			return textureAtlas;
+		}
+		
+		/**
+		 * Returns a texture from this class based on a string key.
+		 * 
+		 * @param name A key that matches a static constant of Bitmap type.
+		 * @return a starling texture.
+		 */
+		public static function getTexture(name:String):Texture
+		{
+			if (_textures[name] == undefined)
+			{
+				var bitmap:Bitmap = new Assets[name]();
+				_textures[name]=Texture.fromBitmap(bitmap);
+			}
+			
+			return _textures[name];
+		}
+		
+		
 	}
 }

@@ -1,8 +1,8 @@
 package game.core.scenes
 {
 	import flash.filters.GlowFilter;
-	import flash.utils.setTimeout;
 	
+	import game.core.App;
 	import game.utils.Assets;
 	import game.utils.DataUtil;
 	import game.utils.SoundManager;
@@ -18,7 +18,6 @@ package game.core.scenes
 	import starling.events.Event;
 	import starling.text.TextField;
 	import starling.utils.deg2rad;
-	import game.core.App;
 	
 	public class MainScene extends Sprite
 	{
@@ -26,8 +25,10 @@ package game.core.scenes
 		private var _gemsAnim:Sprite ;
 		private var _kGemSize:int = 50;
 		private var title:Image;
+		//private var titleContainer:Tween;
 		private var btnPlay:Button;
 		private var btnAbout:Button ;
+		private var btnHighScores:Button;
 		private var highScore:TextField ;
 		private var txt:TextField ;
 		
@@ -48,44 +49,59 @@ package game.core.scenes
 			_gemsAnim.touchable=false;
 			addChild(_gemsAnim);
 			
-			title = new Image( Assets.instance.getUITexture("title")); 
+			title = new Image( Assets.getTexture("LogoMain") );
 			title.touchable = false ;
 			title.pivotX = title.width>>1;
-			title.pivotY = title.height >>1;
+			//title.pivotY = title.height >>1;
 			title.x = stage.stageWidth>>1;
-			title.y = 220;
-			title.rotation = deg2rad(-15);
-			title.scaleX = title.scaleY = 0;
-			var titleTween:Tween = new Tween(title,0.5,Transitions.EASE_OUT_BOUNCE);
-			titleTween.scaleTo(1);
-			Starling.juggler.add( titleTween);
+			title.y = -500 ;
+			title.rotation = deg2rad(2);
+			//title.scaleX = title.scaleY = 0;
+			var titleTween:Tween = new Tween(title,1,Transitions.EASE_OUT_BOUNCE);
+			titleTween.animate("y", -86);
+			var titleSwing:Tween = new Tween(title, 2, Transitions.EASE_IN_OUT);
+			titleSwing.rotateTo(deg2rad(-2));
+			titleSwing.repeatCount = 0;
+			titleSwing.reverse = true;
+			Starling.juggler.add( titleTween );
+			Starling.juggler.add( titleSwing );
 			addChild( title );
 			
-			
-			btnPlay = new Button( Assets.instance.getUITexture("BtnPlay") );
+			btnPlay = new Button( Assets.getTexture("BtnPlay") );
 			btnPlay.pivotX = btnPlay.width>>1;
 			btnPlay.pivotY = btnPlay.height>>1;
 			btnPlay.scaleX = btnPlay.scaleY = 0;
 			btnPlay.x = stage.stageWidth>>1;
-			btnPlay.y = 540 ;
+			btnPlay.y = 353 ;
 			var btnPlayTween:Tween = new Tween(btnPlay,0.5,Transitions.EASE_OUT_BOUNCE);
 			btnPlayTween.delay = 0.25 ;
 			btnPlayTween.scaleTo(1);
 			Starling.juggler.add( btnPlayTween);
 			addChild(btnPlay);
 			
-			
-			btnAbout = new Button( Assets.instance.getUITexture("BtnAbout") );
+			btnAbout = new Button( Assets.getTexture("BtnAbout") );
 			btnAbout.pivotX = btnAbout.width>>1;
 			btnAbout.pivotY = btnAbout.height>>1;
 			btnAbout.scaleX = btnAbout.scaleY = 0;
-			btnAbout.x = stage.stageWidth>>1;
-			btnAbout.y = 740 ;
+			btnAbout.x = 127;
+			btnAbout.y = 499 ;
 			var btnAboutTween:Tween = new Tween(btnAbout,0.5,Transitions.EASE_OUT_BOUNCE);
-			btnAboutTween.delay = 0.5 ;
+			btnAboutTween.delay = 1 ;
 			btnAboutTween.scaleTo(1);
 			Starling.juggler.add( btnAboutTween);
 			addChild(btnAbout);
+			
+			btnHighScores = new Button( Assets.getTexture("BtnHighScores") );
+			btnHighScores.pivotX = btnHighScores.width>>1;
+			btnHighScores.pivotY = btnHighScores.height>>1;
+			btnHighScores.scaleX = btnHighScores.scaleY = 0;
+			btnHighScores.x = 348;
+			btnHighScores.y = 499 ;
+			var btnHighScoresTween:Tween = new Tween(btnHighScores,0.5,Transitions.EASE_OUT_BOUNCE);
+			btnAboutTween.delay = 2 ;
+			btnAboutTween.scaleTo(1);
+			Starling.juggler.add( btnAboutTween);
+			addChild(btnHighScores);
 			
 			highScore = new TextField( stage.stageWidth,80,DataUtil.instance.highScore+"","NumberFont",64,0xffffff);
 			highScore.y = stage.stageHeight-150 ;
