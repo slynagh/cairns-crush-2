@@ -39,6 +39,10 @@ package game.utils
 		public static const BtnPlay:Class;
 		[Embed(source="/../assets/logo_main.png")]
 		public static const LogoMain:Class;
+		[Embed(source="/../assets/babdImage.png")]
+		public static const babdImage:Class;
+		
+		
 		[Embed(source="/../assets/canvas-texture.jpg")]
 		public static const CanvasTexture:Class;
 		[Embed(source="/../assets/canvas-texture-soft.jpg")]

@@ -29,6 +29,7 @@ package game.core.scenes
 		private var btnPlay:Button;
 		private var btnAbout:Button ;
 		private var btnHighScores:Button;
+		private var babdImage:Image;
 		private var highScore:TextField ;
 		private var txt:TextField ;
 		
@@ -44,6 +45,11 @@ package game.core.scenes
 			removeEventListener(Event.ADDED_TO_STAGE , addedHandler );
 			
 			_gems = [] ;
+			
+			babdImage = new Image( Assets.getTexture("babdImage"));
+			babdImage.x=-42;
+			babdImage.y=618;
+			this.addChild(babdImage);
 			
 			_gemsAnim = new Sprite();
 			_gemsAnim.touchable=false;
@@ -72,9 +78,9 @@ package game.core.scenes
 			btnPlay.pivotY = btnPlay.height>>1;
 			btnPlay.scaleX = btnPlay.scaleY = 0;
 			btnPlay.x = stage.stageWidth>>1;
-			btnPlay.y = 353 ;
+			btnPlay.y = 402 ;
 			var btnPlayTween:Tween = new Tween(btnPlay,0.5,Transitions.EASE_OUT_BOUNCE);
-			btnPlayTween.delay = 0.25 ;
+			btnPlayTween.delay = 0.5 ;
 			btnPlayTween.scaleTo(1);
 			Starling.juggler.add( btnPlayTween);
 			addChild(btnPlay);
@@ -83,10 +89,10 @@ package game.core.scenes
 			btnAbout.pivotX = btnAbout.width>>1;
 			btnAbout.pivotY = btnAbout.height>>1;
 			btnAbout.scaleX = btnAbout.scaleY = 0;
-			btnAbout.x = 127;
-			btnAbout.y = 499 ;
+			btnAbout.x = 204;
+			btnAbout.y = 532 ;
 			var btnAboutTween:Tween = new Tween(btnAbout,0.5,Transitions.EASE_OUT_BOUNCE);
-			btnAboutTween.delay = 1 ;
+			btnAboutTween.delay = 0.75 ;
 			btnAboutTween.scaleTo(1);
 			Starling.juggler.add( btnAboutTween);
 			addChild(btnAbout);
@@ -95,15 +101,15 @@ package game.core.scenes
 			btnHighScores.pivotX = btnHighScores.width>>1;
 			btnHighScores.pivotY = btnHighScores.height>>1;
 			btnHighScores.scaleX = btnHighScores.scaleY = 0;
-			btnHighScores.x = 348;
-			btnHighScores.y = 499 ;
+			btnHighScores.x = 426;
+			btnHighScores.y = 532 ;
 			var btnHighScoresTween:Tween = new Tween(btnHighScores,0.5,Transitions.EASE_OUT_BOUNCE);
-			btnAboutTween.delay = 2 ;
-			btnAboutTween.scaleTo(1);
-			Starling.juggler.add( btnAboutTween);
+			btnHighScoresTween.delay = 1 ;
+			btnHighScoresTween.scaleTo(1);
+			Starling.juggler.add( btnHighScoresTween);
 			addChild(btnHighScores);
 			
-			highScore = new TextField( stage.stageWidth,80,DataUtil.instance.highScore+"","NumberFont",64,0xffffff);
+			/*highScore = new TextField( stage.stageWidth,80,DataUtil.instance.highScore+"","NumberFont",64,0xffffff);
 			highScore.y = stage.stageHeight-150 ;
 			highScore.touchable=false;
 			addChild(highScore);
@@ -112,8 +118,7 @@ package game.core.scenes
 			txt.y = highScore.y+50 ;
 			txt.nativeFilters = [ new GlowFilter(0)];
 			txt.touchable =false ;
-			addChild(txt);
-			
+			addChild(txt);*/
 			
 			this.addEventListener(EnterFrameEvent.ENTER_FRAME , update );
 			btnPlay.addEventListener(Event.TRIGGERED , onPlay);
@@ -149,9 +154,13 @@ package game.core.scenes
 			var btnAboutTween:Tween = new Tween(btnAbout,0.25 );
 			btnAboutTween.scaleTo(0);
 			btnAboutTween.moveTo(btnAbout.x,btnAbout.y+100);
-			btnAboutTween.onComplete = showGameScene;
 			Starling.juggler.add( btnAboutTween);
 			
+			var btnHighScoresTween:Tween = new Tween(btnHighScores,0.25);
+			btnHighScoresTween.scaleTo(0);
+			btnHighScoresTween.moveTo(btnHighScores.x, btnHighScores.y+100);
+			btnHighScoresTween.onComplete = showGameScene;
+			Starling.juggler.add( btnHighScoresTween );
 			
 			touchable=false;
 		}
@@ -161,6 +170,24 @@ package game.core.scenes
 			Starling.juggler.purge() ;
 			var gameScene:GameScene = new GameScene();
 			App.instance.showScene( gameScene );
+		}
+		
+		private function showAboutScene():void
+		{
+			Starling.juggler.purge() ;
+			
+			App.instance.showScene( new AboutScene() );
+		}
+		
+		private function showHighScoresScene():void
+		{
+			Starling.juggler.purge() ;
+			App.instance.showScene( new HighScoresScene() );
+		}
+		
+		private function clearScreen():void
+		{
+			
 		}
 		
 		private function update(e:Event):void
