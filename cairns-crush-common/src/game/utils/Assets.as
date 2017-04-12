@@ -85,7 +85,7 @@ package game.utils
 		}
 		
 		
-		public function getUITexture( name:String ):Texture
+		public function getUITexture( name:String ):Texture 
 		{
 			if(!_textures.hasOwnProperty(name)){
 				var texture:Texture = _uiAtlas.getTexture(name);
