@@ -1,9 +1,8 @@
 package game.core
 {
-	import game.core.scenes.MainScene;
+	import game.core.scenes.*;
 	import game.utils.Assets;
 	
-	//import starling.core.Starling;
 	import starling.display.BlendMode;
 	import starling.display.Image;
 	import starling.display.Quad;
@@ -50,14 +49,14 @@ package game.core
 			TextField.registerBitmapFont( numberFont , "NumberFont");
 			
 			//simple white background under all screens
-			var bg:Quad = new Quad(stage.stageWidth, stage.stageHeight); 
+			var bg:Quad = new Quad(stage.stageWidth, stage.stageHeight);
 			this.addChild(bg);
 			
 			_sceneContainer = new Sprite();
 			addChild(_sceneContainer);
 			
 			//light texture overlay over entire app
-			var _overlay:Image = new Image(Assets.getTexture("CanvasTextureSoftVignette"));//(Texture.fromBitmap(new BG(),false)); 
+			var _overlay:Image = new Image(Assets.getTexture("CanvasTextureSoftVignette"));//(Texture.fromBitmap(new BG(),false));
 			_overlay.touchable=false;
 			_overlay.width = stage.stageWidth ;
 			_overlay.height = stage.stageHeight ;

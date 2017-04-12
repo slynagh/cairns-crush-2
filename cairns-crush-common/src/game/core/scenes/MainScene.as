@@ -1,10 +1,9 @@
 package game.core.scenes
-{
-	import flash.filters.GlowFilter;
+{	
+	import flash.utils.getDefinitionByName;
 	
 	import game.core.App;
 	import game.utils.Assets;
-	import game.utils.DataUtil;
 	import game.utils.SoundManager;
 	
 	import starling.animation.Transitions;
@@ -25,7 +24,6 @@ package game.core.scenes
 		private var _gemsAnim:Sprite ;
 		private var _kGemSize:int = 50;
 		private var title:Image;
-		//private var titleContainer:Tween;
 		private var btnPlay:Button;
 		private var btnAbout:Button ;
 		private var btnHighScores:Button;
@@ -36,7 +34,7 @@ package game.core.scenes
 		public function MainScene()
 		{
 			super();
-			addEventListener(Event.ADDED_TO_STAGE , addedHandler );
+			addEventListener(Event.ADDED_TO_STAGE , addedHandler );			
 		}
 		
 		private function addedHandler(e:Event):void
@@ -122,16 +120,49 @@ package game.core.scenes
 			
 			this.addEventListener(EnterFrameEvent.ENTER_FRAME , update );
 			btnPlay.addEventListener(Event.TRIGGERED , onPlay);
+			btnHighScores.addEventListener( Event.TRIGGERED, onHighScoresClick );
+			btnAbout.addEventListener( Event.TRIGGERED, onAboutClick );
 		}
 		
 		private function onPlay(e:Event):void
 		{
 			e.stopPropagation() ;
 			SoundManager.instance.playClick();
-			
+			clearScreen("GameScene");
+		}
+		private function onHighScoresClick(e:Event):void
+		{
+			e.stopPropagation() ;
+			SoundManager.instance.playClick();
+			clearScreen("HighScoresScene");
+		}
+		private function onAboutClick(e:Event):void
+		{
+			e.stopPropagation() ;
+			SoundManager.instance.playClick();
+			clearScreen("AboutScene");
+		}
+		private function showGameScene():void
+		{
+			Starling.juggler.purge() ;
+			var gameScene:GameScene = new GameScene();
+			App.instance.showScene( gameScene );
+		}
+		
+		private function showScene(scene:String):void
+		{
+			Starling.juggler.purge() ;
+			var classPath:String = "game.core.scenes.";
+			var className:Class = getDefinitionByName(classPath + scene) as Class;
+			var sceneToShow:Sprite = new className();
+			App.instance.showScene( sceneToShow );
+		}
+		
+		private function clearScreen(newScene:String):void
+		{
 			removeEventListener(EnterFrameEvent.ENTER_FRAME , update );
-			this.removeChild( highScore , true );
-			this.removeChild( txt , true );
+			//this.removeChild( highScore , true );
+			//this.removeChild( txt , true );
 			
 			for (var i:int = 0; i < this._gemsAnim.numChildren; i++)
 			{
@@ -159,35 +190,10 @@ package game.core.scenes
 			var btnHighScoresTween:Tween = new Tween(btnHighScores,0.25);
 			btnHighScoresTween.scaleTo(0);
 			btnHighScoresTween.moveTo(btnHighScores.x, btnHighScores.y+100);
-			btnHighScoresTween.onComplete = showGameScene;
+			btnHighScoresTween.onComplete = function():void{ showScene(newScene); }
 			Starling.juggler.add( btnHighScoresTween );
 			
 			touchable=false;
-		}
-		
-		private function showGameScene():void
-		{
-			Starling.juggler.purge() ;
-			var gameScene:GameScene = new GameScene();
-			App.instance.showScene( gameScene );
-		}
-		
-		private function showAboutScene():void
-		{
-			Starling.juggler.purge() ;
-			
-			App.instance.showScene( new AboutScene() );
-		}
-		
-		private function showHighScoresScene():void
-		{
-			Starling.juggler.purge() ;
-			App.instance.showScene( new HighScoresScene() );
-		}
-		
-		private function clearScreen():void
-		{
-			
 		}
 		
 		private function update(e:Event):void

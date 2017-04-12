@@ -55,7 +55,7 @@ package game.utils
 		/*
 		Fonts
 		*/
-		[Embed(fontName="JennaSue", source="/../assets/fonts/JennaSue.ttf", mimeType="application/x-font-truetype", embedAsCFF="false")]
+		[Embed(fontName="JennaSue", source="/../assets/fonts/JennaSue.ttf", mimeType="application/x-font-truetype", embedAsCFF="false")] 
 		public static const JennaSue:Class;
 		
 		[Embed(fontName="OpenSans-Light", fontWeight="normal", fontFamily="OpenSans", source="/../assets/fonts/OpenSans-Light.ttf", mimeType="application/x-font-truetype", embedAsCFF="false")]
