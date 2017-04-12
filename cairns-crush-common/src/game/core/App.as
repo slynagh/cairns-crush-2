@@ -1,9 +1,8 @@
 package game.core
 {
-	import game.core.scenes.MainScene;
+	import game.core.scenes.*;
 	import game.utils.Assets;
 	
-	import starling.core.Starling;
 	import starling.display.BlendMode;
 	import starling.display.Image;
 	import starling.display.Quad;

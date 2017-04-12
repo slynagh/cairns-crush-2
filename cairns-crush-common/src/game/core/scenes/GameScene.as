@@ -708,13 +708,7 @@ package game.core.scenes
 			if(flag){
 				this.showMainScene();
 			}
-		}
-		
-		
-		
-		
-		
-		
+		}		
 		
 		override public function dispose():void
 		{
