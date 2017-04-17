@@ -37,7 +37,7 @@ package
 			//Game design width and height
 			var stageW:Number = 640 ;
 			var stageH:Number = 960 ;
-			
+			/*
 			var factor:Number = stageW/stageH ;
 			if(stage.fullScreenWidth/stage.fullScreenHeight>factor)
 			{
@@ -49,7 +49,7 @@ package
 				//Portrait
 				stageH = stageW*stage.fullScreenHeight/stage.fullScreenWidth;
 			}
-			
+			*/
 			var viewPort:Rectangle = RectangleUtil.fit(
 				new Rectangle(0, 0, stageW, stageH), 
 				new Rectangle(0, 0,stage.fullScreenWidth , stage.fullScreenHeight ), 

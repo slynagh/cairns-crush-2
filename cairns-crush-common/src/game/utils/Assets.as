@@ -19,15 +19,19 @@ package game.utils
 		Atlases
 		*/
 		[Embed(source="/../assets/Gems_HD.png")]
-		public static const Gems_HD:Class
+		public static const Gems_HD:Class;
 		[Embed(source="/../assets/Gems_HD.xml",mimeType="application/octet-stream")]
-		public static const Gems_HD_XML:Class
+		public static const Gems_HD_XML:Class;
 		
 		[Embed(source="/../assets/UI_SD.png")]
 		public static const UI_SD:Class;
 		[Embed(source="/../assets/UI_SD.xml",mimeType="application/octet-stream")]
 		public static const UI_SD_XML:Class;
 		
+		[Embed(source="/../assets/HighScoresScreen.png")]
+		public static const HighScoresScreen:Class;
+		[Embed(source="/../assets/HighScoresScreen.xml", mimeType="application/octet-stream")]
+		public static const HighScoresScreen_XML:Class;
 		/*
 		images
 		*/
@@ -49,9 +53,7 @@ package game.utils
 		public static const CanvasTextureSoft:Class;
 		[Embed(source="/../assets/canvas-texture-soft-vignette.jpg")]
 		public static const CanvasTextureSoftVignette:Class;
-		
-		
-		
+	
 		/*
 		Fonts
 		*/
@@ -67,6 +69,7 @@ package game.utils
 		private static var _textures:Dictionary = new Dictionary();
 		private static var _gemsAtlas:TextureAtlas ;
 		private static var _uiAtlas:TextureAtlas ;
+		private static var _highScoresAtlas:TextureAtlas;
 		
 		public function Assets()
 		{
@@ -124,9 +127,17 @@ package game.utils
 					}
 					textureAtlas =  _uiAtlas;
 					break;
-				
+				case "HighScoresScreen":
+					if (_highScoresAtlas == null)
+					{
+						texture = getTexture("HighScoresScreen");
+						xml = new HighScoresScreen_XML() as XML;
+						_highScoresAtlas=new TextureAtlas(texture, xml);
+					}
+					textureAtlas =  _highScoresAtlas; 
+					break;
 				default:
-					throw new Error("No atlasID passed to function getAtlas");
+					throw new Error("Did not recognise atlasID passed to function getAtlas");
 					/*
 					if (gameTextureAtlas == null)
 					{

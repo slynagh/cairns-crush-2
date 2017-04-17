@@ -24,9 +24,9 @@ package game.core
 		//[Embed(source="../../../assets/Bg.jpg")]
 		//public static const BG:Class;
 		
-		[Embed(source="../../../assets/scorefont.png")]
+		[Embed(source="../../../assets/scorefont2.png")]
 		public static const SCOREFONT:Class;
-		[Embed(source="../../../assets/scorefont.fnt",mimeType="application/octet-stream")]
+		[Embed(source="../../../assets/scorefont2.fnt",mimeType="application/octet-stream")]
 		public static const SCOREFONT_FNT:Class;
 		
 		private var _sceneContainer:Sprite ;
@@ -37,7 +37,7 @@ package game.core
 		{
 			super();
 			if(_instance) throw new Error("Only one instance can be instantiated");
-			_instance = this ;
+			_instance = this ; 
 			addEventListener(Event.ADDED_TO_STAGE , addedHandler);
 		}
 		

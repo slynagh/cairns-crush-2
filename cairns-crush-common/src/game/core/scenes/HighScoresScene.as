@@ -12,8 +12,10 @@ package game.core.scenes
 	
 	import game.utils.Assets;
 	
+	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.textures.Texture;
 	
 	public class HighScoresScene extends Sprite
 	{
@@ -28,6 +30,21 @@ package game.core.scenes
 			this.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			trace("High Scores scene added");
 			
+			createHeader();
+		
+		}
+		
+		private function createHeader():void
+		{
+			var titleTexture:Texture = Assets.getAtlas("HighScoresScreen").getTexture("HighScoresTitle0000");
+			var title:Image = new Image(titleTexture);
+			title.x=20;
+			title.y=20;
+			this.addChild(title);
+		}
+		
+		private function createList():void
+		{
 			var list:List = new List();
 			list.width = stage.stageWidth;
 			list.height = stage.stageHeight;
@@ -91,7 +108,6 @@ package game.core.scenes
 				
 				return renderer;
 			}	
-		
 		}
 	}
 }

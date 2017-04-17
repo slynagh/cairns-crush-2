@@ -1,9 +1,9 @@
 package game.core.scenes
 {	
-	import flash.utils.getDefinitionByName;
-	
+	import game.Config;
 	import game.core.App;
 	import game.utils.Assets;
+	import game.utils.DataUtil;
 	import game.utils.SoundManager;
 	
 	import starling.animation.Transitions;
@@ -83,45 +83,52 @@ package game.core.scenes
 			Starling.juggler.add( btnPlayTween);
 			addChild(btnPlay);
 			
-			btnAbout = new Button( Assets.getTexture("BtnAbout") );
-			btnAbout.pivotX = btnAbout.width>>1;
-			btnAbout.pivotY = btnAbout.height>>1;
-			btnAbout.scaleX = btnAbout.scaleY = 0;
-			btnAbout.x = 204;
-			btnAbout.y = 532 ;
-			var btnAboutTween:Tween = new Tween(btnAbout,0.5,Transitions.EASE_OUT_BOUNCE);
-			btnAboutTween.delay = 0.75 ;
-			btnAboutTween.scaleTo(1);
-			Starling.juggler.add( btnAboutTween);
-			addChild(btnAbout);
-			
-			btnHighScores = new Button( Assets.getTexture("BtnHighScores") );
-			btnHighScores.pivotX = btnHighScores.width>>1;
-			btnHighScores.pivotY = btnHighScores.height>>1;
-			btnHighScores.scaleX = btnHighScores.scaleY = 0;
-			btnHighScores.x = 426;
-			btnHighScores.y = 532 ;
-			var btnHighScoresTween:Tween = new Tween(btnHighScores,0.5,Transitions.EASE_OUT_BOUNCE);
-			btnHighScoresTween.delay = 1 ;
-			btnHighScoresTween.scaleTo(1);
-			Starling.juggler.add( btnHighScoresTween);
-			addChild(btnHighScores);
-			
-			/*highScore = new TextField( stage.stageWidth,80,DataUtil.instance.highScore+"","NumberFont",64,0xffffff);
-			highScore.y = stage.stageHeight-150 ;
-			highScore.touchable=false;
-			addChild(highScore);
-			
-			txt = new TextField( stage.stageWidth,64,"High Score","",32,0xffffff,true);
-			txt.y = highScore.y+50 ;
-			txt.nativeFilters = [ new GlowFilter(0)];
-			txt.touchable =false ;
-			addChild(txt);*/
+			if (game.Config.TARGET === "mobile")
+			{
+				highScore = new TextField( stage.stageWidth,80,DataUtil.instance.highScore+"","JennaSue",72,0x5F680C);
+				highScore.y = 480 ;
+				highScore.touchable=false;
+				addChild(highScore);
+				
+				txt = new TextField( stage.stageWidth,64,"High Score","JennaSue",48,0x5F680C,true);
+				txt.y = highScore.y+72 ;
+				//txt.nativeFilters = [ new GlowFilter(0)];
+				txt.touchable =false ;
+				addChild(txt);
+			}
+			else if (game.Config.TARGET === "web" )
+			{
+				btnAbout = new Button( Assets.getTexture("BtnAbout") );
+				btnAbout.pivotX = btnAbout.width>>1;
+				btnAbout.pivotY = btnAbout.height>>1;
+				btnAbout.scaleX = btnAbout.scaleY = 0;
+				btnAbout.x = 204;
+				btnAbout.y = 532 ;
+				var btnAboutTween:Tween = new Tween(btnAbout,0.5,Transitions.EASE_OUT_BOUNCE);
+				btnAboutTween.delay = 0.75 ;
+				btnAboutTween.scaleTo(1);
+				Starling.juggler.add( btnAboutTween);
+				addChild(btnAbout);
+				
+				btnHighScores = new Button( Assets.getTexture("BtnHighScores") );
+				btnHighScores.pivotX = btnHighScores.width>>1;
+				btnHighScores.pivotY = btnHighScores.height>>1;
+				btnHighScores.scaleX = btnHighScores.scaleY = 0;
+				btnHighScores.x = 426;
+				btnHighScores.y = 532 ;
+				var btnHighScoresTween:Tween = new Tween(btnHighScores,0.5,Transitions.EASE_OUT_BOUNCE);
+				btnHighScoresTween.delay = 1 ;
+				btnHighScoresTween.scaleTo(1);
+				Starling.juggler.add( btnHighScoresTween);
+				addChild(btnHighScores);
+				
+				btnHighScores.addEventListener( Event.TRIGGERED, onHighScoresClick );
+				btnAbout.addEventListener( Event.TRIGGERED, onAboutClick );
+			}
 			
 			this.addEventListener(EnterFrameEvent.ENTER_FRAME , update );
 			btnPlay.addEventListener(Event.TRIGGERED , onPlay);
-			btnHighScores.addEventListener( Event.TRIGGERED, onHighScoresClick );
-			btnAbout.addEventListener( Event.TRIGGERED, onAboutClick );
+			
 		}
 		
 		private function onPlay(e:Event):void
@@ -149,13 +156,33 @@ package game.core.scenes
 			App.instance.showScene( gameScene );
 		}
 		
-		private function showScene(scene:String):void
+		private function showScene(sceneName:String):void
 		{
 			Starling.juggler.purge() ;
-			var classPath:String = "game.core.scenes.";
-			var className:Class = getDefinitionByName(classPath + scene) as Class;
+			var scene:Sprite;
+			switch (sceneName)
+			{
+				case "GameScene":
+					scene = new GameScene();
+					break;
+				case "AboutScene":
+					scene = new AboutScene();
+					break;
+				case "HighScoresScene":
+					scene = new HighScoresScene();
+					break;
+				default:
+					throw new Error("Scene does not exist: "+sceneName);
+					break;
+				
+			}
+			App.instance.showScene( scene );
+			/*
+			var fullClassName:String = "game.core.scenes." + scene;
+			var className:Class = getDefinitionByName(fullClassName) as Class;
 			var sceneToShow:Sprite = new className();
 			App.instance.showScene( sceneToShow );
+			*/
 		}
 		
 		private function clearScreen(newScene:String):void
@@ -182,16 +209,25 @@ package game.core.scenes
 			btnPlayTween.moveTo(btnPlay.x,btnPlay.y+100);
 			Starling.juggler.add( btnPlayTween);
 			
-			var btnAboutTween:Tween = new Tween(btnAbout,0.25 );
-			btnAboutTween.scaleTo(0);
-			btnAboutTween.moveTo(btnAbout.x,btnAbout.y+100);
-			Starling.juggler.add( btnAboutTween);
-			
-			var btnHighScoresTween:Tween = new Tween(btnHighScores,0.25);
-			btnHighScoresTween.scaleTo(0);
-			btnHighScoresTween.moveTo(btnHighScores.x, btnHighScores.y+100);
-			btnHighScoresTween.onComplete = function():void{ showScene(newScene); }
-			Starling.juggler.add( btnHighScoresTween );
+			if (game.Config.TARGET === "web")
+			{
+				var btnAboutTween:Tween = new Tween(btnAbout,0.25 );
+				btnAboutTween.scaleTo(0);
+				btnAboutTween.moveTo(btnAbout.x,btnAbout.y+100);
+				Starling.juggler.add( btnAboutTween);
+				
+				var btnHighScoresTween:Tween = new Tween(btnHighScores,0.25);
+				btnHighScoresTween.scaleTo(0);
+				btnHighScoresTween.moveTo(btnHighScores.x, btnHighScores.y+100);
+				btnHighScoresTween.onComplete = function():void{ showScene(newScene); }
+				Starling.juggler.add( btnHighScoresTween );
+			}
+			else if (game.Config.TARGET === "mobile")
+			{
+				this.removeChild( highScore , true );
+				this.removeChild( txt , true );
+				showScene(newScene)
+			}
 			
 			touchable=false;
 		}
@@ -200,7 +236,7 @@ package game.core.scenes
 		{
 			var gem:Object ;
 			
-			if (Math.random() < 0.02)
+			if (Math.random() < 0.02) 
 			{
 				var sprt:Image = new Image( Assets.instance.getGemsTexture("Gem"+Math.ceil(Math.random()*6)) );
 				sprt.pivotX  = sprt.width>>1;

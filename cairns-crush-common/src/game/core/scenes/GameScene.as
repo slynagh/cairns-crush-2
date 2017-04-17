@@ -442,14 +442,14 @@ package game.core.scenes
 			_timerCon = new Sprite();
 			_timerCon.touchable=false;
 			_topBar.addChild(_timerCon);
-			var timerBar:Image = new Image( Assets.instance.getUITexture("timer"));
+			var timerBar:Image = new Image( Assets.instance.getUITexture("timer"));   
 			_timerCon.x =(stage.stageWidth-timerBar.width)/2  ;
 			_timerCon.y = 85 ;
 			_timerCon.addChild(timerBar);
 			_timerWidth = timerBar.width ;
 			_timerCon.clipRect = new Rectangle(0,0,_timerWidth,timerBar.height);
 			
-			_txtScore = new TextField( stage.stageWidth/2,80,"0","NumberFont",64,0xffffff);
+			_txtScore = new TextField( stage.stageWidth/2,80,"0","NumberFont",64,0x6B7A10);
 			_txtScore.vAlign = VAlign.TOP;
 			_txtScore.hAlign = HAlign.RIGHT ;
 			_txtScore.touchable = false ;
@@ -478,7 +478,7 @@ package game.core.scenes
 		
 		private function createBottom():void
 		{
-			_bottomCon = new Sprite();
+			/*_bottomCon = new Sprite();
 			_bottomCon.touchable = false ;
 			addChild(_bottomCon);
 			
@@ -496,7 +496,7 @@ package game.core.scenes
 			title.scaleX = title.scaleY = 0.5 ;
 			title.y = bottom.y +title.pivotY-40 ;
 			title.x = stage.stageWidth/2 ;
-			_bottomCon.addChild(title);
+			_bottomCon.addChild(title);*/
 		}
 	
 		/**
