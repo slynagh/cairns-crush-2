@@ -59,8 +59,8 @@ package
 			_starling=  new Starling(App,stage, null, null, "auto", "auto");
 			_starling.stage.stageWidth = stageW;
 			_starling.stage.stageHeight = stageH ;
-			_starling.showStats = true ;
-			_starling.showStatsAt("left","bottom");
+			//_starling.showStats = true ;
+			//_starling.showStatsAt("left","bottom");
 			_starling.addEventListener("context3DCreate" , onContextCreated);
 			
 			
