@@ -58,8 +58,8 @@ package
 			_starl=  new Starling(App,stage,viewPort);
 			_starl.stage.stageWidth = stageW;
 			_starl.stage.stageHeight = stageH ;
-			_starl.showStats = true ;
-			_starl.showStatsAt("left","bottom");
+			//_starl.showStats = true ;
+			//_starl.showStatsAt("left","bottom");
 			_starl.addEventListener("context3DCreate" , onContextCreated);
 			
 			SoundMixer.audioPlaybackMode = AudioPlaybackMode.AMBIENT;
