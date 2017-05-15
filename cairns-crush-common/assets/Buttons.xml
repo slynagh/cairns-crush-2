@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Buttons.png">
+	<!-- Created with Adobe Animate version 16.2.0.24 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="BtnDone0000" x="2" y="72" width="156" height="68" pivotX="3" pivotY="3"/>
+	<SubTexture name="BtnHome0000" x="2" y="2" width="156" height="68" pivotX="3" pivotY="3"/>
+</TextureAtlas>

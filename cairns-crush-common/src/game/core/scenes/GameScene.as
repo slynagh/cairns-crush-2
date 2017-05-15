@@ -7,8 +7,10 @@ package game.core.scenes
 	import flash.utils.setTimeout;
 	
 	import game.comm.GameData;
+	import game.core.App;
 	import game.core.item.Card;
 	import game.core.item.Hint;
+	import game.ui.GameOverContainer;
 	import game.utils.Assets;
 	import game.utils.CardFactory;
 	import game.utils.CardUtil;
@@ -32,10 +34,18 @@ package game.core.scenes
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
 	import starling.utils.deg2rad;
-	import game.core.App;
 	
 	public class GameScene extends Sprite
 	{
+		private static const STATE_START:String = "stateStart";
+		private static const STATE_PLAYING:String = "statePlaying";
+		private static const STATE_GAMEOVER:String = "stateGameOver";
+		private static const STATE_HIGHSCORE:String = "stateHighScore";
+		private static const STATE_PAUSED:String = "statePaused";
+		private static const STATE_HIGHSCORE_INIT:String = "stateHighScoreInit";
+		
+		private var _gameState:String;
+		
 		private var _bgEffect:Sprite ;
 		private var _topBar:Sprite ;
 		private var _gemsCon:Sprite ;
@@ -47,7 +57,8 @@ package game.core.scenes
 		private var _timerWidth:Number ;
 		private var _txtScore:TextField;
 		
-		private var _time:int = 60*60;
+		private var _time:int = 60*60; //60*60
+		private var _hintTime:int;
 		
 		private var _clickInterval:int ; //The click interval
 		private var _clickTime:int ; //The click interval
@@ -65,6 +76,9 @@ package game.core.scenes
 		private var _realScore:int ;
 		private var _currScore:int ;
 		
+		private var _highScoreModal:GameOverContainer;
+		private var tween_highScoreModal:Tween;
+		
 		public function GameScene()
 		{
 			super();
@@ -75,6 +89,10 @@ package game.core.scenes
 		{
 			removeEventListener(Event.ADDED_TO_STAGE , added );
 			SoundManager.instance.stopLoop();
+			
+			_highScoreModal = new GameOverContainer();
+			_highScoreModal.visible = false;
+			this.addChild(_highScoreModal);
 			
 			createBgEffect();
 			
@@ -106,6 +124,9 @@ package game.core.scenes
 			initShowCards();
 			
 			_prevPoint = new Point(x,y);
+			
+			_gameState = STATE_START;
+			
 			this.addEventListener(EnterFrameEvent.ENTER_FRAME , update );
 			_gemsCon.addEventListener( TouchEvent.TOUCH , onTouch);
 			
@@ -123,7 +144,8 @@ package game.core.scenes
 			removeTween.onComplete = function():void
 			{
 				removeChild(go,true);
-				_gameIsStart = true ;
+				//_gameIsStart = true ;
+				_gameState = STATE_PLAYING;
 			}
 			
 			var tween:Tween = new Tween(go,0.5,Transitions.EASE_OUT_ELASTIC);
@@ -135,7 +157,8 @@ package game.core.scenes
 		
 		private function onTouch(e:TouchEvent):void
 		{
-			if(_gameIsStart)
+			//if(_gameIsStart)
+			if (_gameState === STATE_PLAYING)
 			{
 				var touch:Touch = e.touches[0];
 				if(touch.target && touch.target.parent is Card )
@@ -257,7 +280,7 @@ package game.core.scenes
 			else if(explosionType==1)
 			{
 				SoundManager.instance.playBomb();
-				//行列炸弹
+				//Ranks of bombs
 				var effect1:Image = new Image(Assets.instance.getUITexture("bomb-explo-inner"));
 				effect1.blendMode = BlendMode.ADD ;
 				effect1.touchable = false ;
@@ -322,7 +345,7 @@ package game.core.scenes
 		
 		private function refreshAll():void
 		{
-			if(!_gameIsOver)
+			if(_gameState === STATE_PLAYING)   //!_gameIsOver
 			{
 				var card:Card ;
 				//Start the shift and create a new one
@@ -535,11 +558,13 @@ package game.core.scenes
 				}
 			}
 		}
-		private var _hintTime:int;
+		
 		
 		private function update( e:EnterFrameEvent ):void 
-		{
-			if(!_gameIsOver)
+		{			
+			if(_gameState === STATE_PAUSED) return;
+			
+			if(_gameState === STATE_START || _gameState === STATE_PLAYING)  //!_gameIsOver
 			{
 				var card:Card ;
 				var noDown:Boolean=true; //Whether there is not finished out
@@ -579,7 +604,7 @@ package game.core.scenes
 					}
 				}
 				
-				if(_gameIsStart)
+				if(_gameState === STATE_PLAYING)   //_gameIsStart
 				{
 					_time-- ;
 					if(_time>=0){
@@ -599,6 +624,25 @@ package game.core.scenes
 						hint();
 					}
 				}
+			}
+			else if (_gameState === STATE_HIGHSCORE_INIT)
+			{
+				trace ("State: highscore init");
+				this.setChildIndex(_highScoreModal, this.numChildren-1);
+				//_highScoreModal.alpha = 0;
+				//_highScoreModal.visible = true;
+				_highScoreModal.initialize(_realScore);
+				
+				//tween_highScoreModal = new Tween(_highScoreModal, 1);
+				//tween_highScoreModal.fadeTo(1);
+				//Starling.juggler.add(tween_highScoreModal);
+				_gameState = STATE_HIGHSCORE;
+			}
+			else if (_gameState === STATE_HIGHSCORE)
+			{
+				_highScoreModal.visible = true;
+				//_highScoreModal.alpha = 0;			
+				//Nothing to do here
 			}
 			else
 			{
@@ -684,13 +728,15 @@ package game.core.scenes
 			_effectCon.visible = false ;
 			_hintCon.visible = false ;
 			
-			_gameIsOver = true ;
+			//_gameIsOver = true ;
+			_gameState = STATE_GAMEOVER;
 		}
 		
 		private function updateGameOver():void
 		{
 			var len:int = _gGameOverGems.length;
 			var flag:Boolean = true ;
+			var hsRank:int;
 			for (var i:int = 0; i <len; i++)
 			{
 				var gem:Object = _gGameOverGems[i];
@@ -706,7 +752,23 @@ package game.core.scenes
 				}
 			}
 			if(flag){
-				this.showMainScene();
+				//check for highscore
+				hsRank = App.instance.highScores.checkIfHighScore(_realScore);
+				//trace (hsRank);
+				if(hsRank === 0)//new highest score!
+				{
+					_gameState = STATE_HIGHSCORE_INIT;
+					trace ("A new High score!");
+					//this.addChild(new GameOverContainer());
+					
+				}
+				else if(hsRank < 10)//Made the list
+				{
+					_gameState = STATE_HIGHSCORE_INIT;
+					trace ("A top ten score!");
+					//this.addChild(new GameOverContainer());
+				}
+				else this.showMainScene();
 			}
 		}		
 		

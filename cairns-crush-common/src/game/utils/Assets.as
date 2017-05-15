@@ -32,6 +32,10 @@ package game.utils
 		public static const HighScoresScreen:Class;
 		[Embed(source="/../assets/HighScoresScreen.xml", mimeType="application/octet-stream")]
 		public static const HighScoresScreen_XML:Class;
+		[Embed(source="/../assets/Buttons.png")]
+		public static const Buttons:Class;
+		[Embed(source="/../assets/Buttons.xml", mimeType="application/octet-stream")]
+		public static const Buttons_XML:Class;
 		/*
 		images
 		*/
@@ -70,6 +74,7 @@ package game.utils
 		private static var _gemsAtlas:TextureAtlas ;
 		private static var _uiAtlas:TextureAtlas ;
 		private static var _highScoresAtlas:TextureAtlas;
+		private static var _buttonsAtlas:TextureAtlas;
 		
 		public function Assets()
 		{
@@ -131,10 +136,20 @@ package game.utils
 					if (_highScoresAtlas == null)
 					{
 						texture = getTexture("HighScoresScreen");
-						xml = new HighScoresScreen_XML() as XML;
+						xml = XML(new HighScoresScreen_XML());
 						_highScoresAtlas=new TextureAtlas(texture, xml);
 					}
 					textureAtlas =  _highScoresAtlas; 
+					break;
+				case "Buttons":
+					if (_buttonsAtlas == null)
+					{
+						texture = getTexture("Buttons");
+						xml = XML(new Buttons_XML());
+						_buttonsAtlas = new TextureAtlas(texture, xml);
+						
+					}
+					textureAtlas = _buttonsAtlas;
 					break;
 				default:
 					throw new Error("Did not recognise atlasID passed to function getAtlas");

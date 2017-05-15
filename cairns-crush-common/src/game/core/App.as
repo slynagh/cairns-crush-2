@@ -1,6 +1,6 @@
 package game.core
 {
-	import game.core.scenes.*;
+	import game.core.scenes.MainScene;
 	import game.utils.Assets;
 	
 	import starling.display.BlendMode;
@@ -30,6 +30,7 @@ package game.core
 		public static const SCOREFONT_FNT:Class;
 		
 		private var _sceneContainer:Sprite ;
+		private var _highScores:HighScores;
 		//private var _overlay:Image;
 		
 		
@@ -37,7 +38,10 @@ package game.core
 		{
 			super();
 			if(_instance) throw new Error("Only one instance can be instantiated");
-			_instance = this ; 
+			_instance = this ;
+			
+			_highScores = new HighScores();
+			
 			addEventListener(Event.ADDED_TO_STAGE , addedHandler);
 		}
 		
@@ -71,6 +75,11 @@ package game.core
 		{
 			_sceneContainer.removeChildren(0,-1,true);
 			_sceneContainer.addChild(scene);
+		}
+		
+		public function get highScores():HighScores
+		{
+			return this._highScores;
 		}
 	}
 }

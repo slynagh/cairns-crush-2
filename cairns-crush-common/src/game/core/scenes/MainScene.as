@@ -12,9 +12,11 @@ package game.core.scenes
 	import starling.display.Button;
 	import starling.display.DisplayObject;
 	import starling.display.Image;
+	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
+	import starling.events.TouchEvent;
 	import starling.text.TextField;
 	import starling.utils.deg2rad;
 	
@@ -25,11 +27,14 @@ package game.core.scenes
 		private var _kGemSize:int = 50;
 		private var title:Image;
 		private var btnPlay:Button;
-		private var btnAbout:Button ;
-		private var btnHighScores:Button;
+		//private var btnAbout:Button ;
+		//private var btnHighScores:Button;
 		private var babdImage:Image;
 		private var highScore:TextField ;
+		private var highScoreName:String;
 		private var txt:TextField ;
+		private var highScoreMgr:HighScores;
+		private var secret:Button;
 		
 		public function MainScene()
 		{
@@ -81,7 +86,7 @@ package game.core.scenes
 			btnPlayTween.delay = 0.5 ;
 			btnPlayTween.scaleTo(1);
 			Starling.juggler.add( btnPlayTween);
-			addChild(btnPlay);
+			addChild(btnPlay);			
 			
 			if (game.Config.TARGET === "mobile")
 			{
@@ -98,7 +103,30 @@ package game.core.scenes
 			}
 			else if (game.Config.TARGET === "web" )
 			{
-				btnAbout = new Button( Assets.getTexture("BtnAbout") );
+				highScoreMgr = new HighScores();
+				
+				//highScore = new TextField( stage.stageWidth,80,DataUtil.instance.highScore+"","JennaSue",72,0x5F680C);
+				highScore = new TextField( stage.stageWidth,80,"","JennaSue",72,0x5F680C);
+				refreshHSDetails();
+				highScore.y = 480 ;
+				highScore.touchable=false;
+				addChild(highScore);
+				
+				txt = new TextField( stage.stageWidth,64,"High Score","JennaSue",48,0x5F680C,true);
+				txt.y = highScore.y+72 ;
+				//txt.nativeFilters = [ new GlowFilter(0)];
+				txt.touchable =false ;
+				addChild(txt);
+				
+				secret = new Button(Assets.getTexture("BtnPlay"));
+				secret.alpha = 0;
+				secret.width = 5;
+				secret.height = 5;
+				secret.addEventListener(Event.TRIGGERED, secretTriggered);
+				this.addChild(secret);
+				
+				
+/*				btnAbout = new Button( Assets.getTexture("BtnAbout") );
 				btnAbout.pivotX = btnAbout.width>>1;
 				btnAbout.pivotY = btnAbout.height>>1;
 				btnAbout.scaleX = btnAbout.scaleY = 0;
@@ -122,13 +150,67 @@ package game.core.scenes
 				Starling.juggler.add( btnHighScoresTween);
 				addChild(btnHighScores);
 				
+				
 				btnHighScores.addEventListener( Event.TRIGGERED, onHighScoresClick );
-				btnAbout.addEventListener( Event.TRIGGERED, onAboutClick );
+				btnAbout.addEventListener( Event.TRIGGERED, onAboutClick );*/
+				
+				
 			}
 			
 			this.addEventListener(EnterFrameEvent.ENTER_FRAME , update );
-			btnPlay.addEventListener(Event.TRIGGERED , onPlay);
+			btnPlay.addEventListener(Event.TRIGGERED , onPlay);	
+		}
+		
+		private function secretTriggered(e:Event):void
+		{
+			showHSDetails();
+		}
+		
+		private function refreshHSDetails():void
+		{
+			 //adapted from BABD RMA15 game
+				var i:Number;
+				var self:MainScene = this;
+				//self.highScores.text = "Loading scores...";
+				highScoreMgr.getHighScores(function(highScoreData):void{
+					if (highScoreData[0] ===  null) return;
+					//var rankNo:Number = 0;
+					//if (highscoreMgr.scoreMethod == highscoreMgr.LOCAL_SCORING){
+					//hsText.text = "building high scores\r";
+					self.highScore.text = "";
+					
+					self.highScore.text += highScoreData[0][1]+ " "+highScoreData[0][0];
+					/*for(i in highScoreData){
+					self.highScores.text += highScoreData[i][1]+ " "+highScoreData[i][0]+ " "+highScoreData[i][2]+"\n";
+					
+					rankNo++;
+					if (rankNo == 10) break;
+					}*/
+					//}
+				});
 			
+		}
+		
+		private function showHSDetails():void{  //adapted from BABD RMA15 game
+			var i:Number;
+			var self:MainScene = this;
+			//self.highScores.text = "Loading scores...";
+			highScoreMgr.getHighScores(function(highScoreData):void{
+				if (highScoreData[0] ===  null) return;
+				//var rankNo:Number = 0;
+				//if (highscoreMgr.scoreMethod == highscoreMgr.LOCAL_SCORING){
+				//hsText.text = "building high scores\r";
+				self.highScore.text = "";
+				
+				self.highScore.text += highScoreData[0][1]+ " "+highScoreData[0][0] + " "+highScoreData[0][2];
+				/*for(i in highScoreData){
+					self.highScores.text += highScoreData[i][1]+ " "+highScoreData[i][0]+ " "+highScoreData[i][2]+"\n";
+					
+					rankNo++;
+					if (rankNo == 10) break;
+				}*/
+				//}
+			});
 		}
 		
 		private function onPlay(e:Event):void
@@ -211,7 +293,7 @@ package game.core.scenes
 			
 			if (game.Config.TARGET === "web")
 			{
-				var btnAboutTween:Tween = new Tween(btnAbout,0.25 );
+				/*var btnAboutTween:Tween = new Tween(btnAbout,0.25 );
 				btnAboutTween.scaleTo(0);
 				btnAboutTween.moveTo(btnAbout.x,btnAbout.y+100);
 				Starling.juggler.add( btnAboutTween);
@@ -220,13 +302,16 @@ package game.core.scenes
 				btnHighScoresTween.scaleTo(0);
 				btnHighScoresTween.moveTo(btnHighScores.x, btnHighScores.y+100);
 				btnHighScoresTween.onComplete = function():void{ showScene(newScene); }
-				Starling.juggler.add( btnHighScoresTween );
+				Starling.juggler.add( btnHighScoresTween );*/
+				this.removeChild( highScore , true );
+				this.removeChild( txt , true );
+				showScene(newScene);
 			}
 			else if (game.Config.TARGET === "mobile")
 			{
 				this.removeChild( highScore , true );
 				this.removeChild( txt , true );
-				showScene(newScene)
+				showScene(newScene);
 			}
 			
 			touchable=false;
