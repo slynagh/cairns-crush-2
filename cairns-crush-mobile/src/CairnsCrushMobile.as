@@ -10,6 +10,7 @@ package
 	import flash.media.SoundMixer;
 	import flash.system.Capabilities;
 	
+	import game.Config;
 	import game.core.App;
 	
 	import starling.core.Starling;
@@ -35,8 +36,8 @@ package
 			
 			
 			//Game design width and height
-			var stageW:Number = 640 ;
-			var stageH:Number = 960 ;
+			var stageW:Number = Config.STAGE_WIDTH ;
+			var stageH:Number = Config.STAGE_HEIGHT ;
 			/*
 			var factor:Number = stageW/stageH ;
 			if(stage.fullScreenWidth/stage.fullScreenHeight>factor)
@@ -52,7 +53,7 @@ package
 			*/
 			var viewPort:Rectangle = RectangleUtil.fit(
 				new Rectangle(0, 0, stageW, stageH), 
-				new Rectangle(0, 0,stage.fullScreenWidth , stage.fullScreenHeight ), 
+				new Rectangle(0, 0,stage.fullScreenWidth , stage.fullScreenHeight ),
 				ScaleMode.SHOW_ALL,false);
 			
 			_starl=  new Starling(App,stage,viewPort);
