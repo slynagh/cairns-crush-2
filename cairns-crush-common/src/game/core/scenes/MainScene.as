@@ -77,7 +77,7 @@ package game.core.scenes
 			btnPlay.pivotY = btnPlay.height>>1;
 			btnPlay.scaleX = btnPlay.scaleY = 0;
 			btnPlay.x = stage.stageWidth>>1;
-			btnPlay.y = 402 ;
+			btnPlay.y = stage.stageHeight>>1 ;
 			var btnPlayTween:Tween = new Tween(btnPlay,0.5,Transitions.EASE_OUT_BOUNCE);
 			btnPlayTween.delay = 0.5 ;
 			btnPlayTween.scaleTo(1);
@@ -86,18 +86,21 @@ package game.core.scenes
 			
 			if (Config.TARGET === "mobile")
 			{
-				highScore = new TextField( stage.stageWidth,100,DataUtil.instance.highScore+"","JennaSue",64,0x5F680C);
-				highScore.hAlign = HAlign.RIGHT;
-				highScore.x= stage.stageWidth - 200 ;
-				highScore.y = 200;
-				highScore.touchable=false;
-				addChild(highScore);
+				if (DataUtil.instance.highScore > 0){
+					var highScoreText:String = "High Score: " + DataUtil.instance.highScore;
+					highScore = new TextField( stage.stageWidth,100,highScoreText,"JennaSue",64,0x5F680C);
+					highScore.hAlign = HAlign.CENTER;
+					
+					highScore.y = 550;
+					highScore.touchable=false;
+					addChild(highScore);
+				}
 				
-				txt = new TextField( 100,64,"High Score","JennaSue",64,0x5F680C,true);
-				txt.y = highScore.y+72 ;
+				//txt = new TextField( 100,64,"High Score","JennaSue",64,0x5F680C,true);
+				//txt.y = highScore.y+72 ;
 				//txt.nativeFilters = [ new GlowFilter(0)];
-				txt.touchable =false ;
-				addChild(txt);
+				//txt.touchable = false ;
+				//addChild(txt);
 			}
 			else if (Config.TARGET === "web" )
 			{

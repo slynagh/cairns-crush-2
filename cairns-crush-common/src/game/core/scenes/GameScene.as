@@ -47,7 +47,7 @@ package game.core.scenes
 		private var _timerWidth:Number ;
 		private var _txtScore:TextField;
 		
-		private var _time:int = 60*60;
+		private var _time:int = 60*60; //seconds * frames/second
 		
 		private var _clickInterval:int ; //The click interval
 		private var _clickTime:int ; //The click interval
