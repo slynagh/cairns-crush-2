@@ -17,11 +17,11 @@ package
 	import starling.utils.RectangleUtil;
 	import starling.utils.ScaleMode;
 	
-	public class CairnsCrushMobile extends Sprite
+	public class MinuteOfMadness extends Sprite
 	{
 		private var _starl:Starling ;
 		
-		public function CairnsCrushMobile()
+		public function MinuteOfMadness()
 		{
 			super();
 			
