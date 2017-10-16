@@ -15,11 +15,11 @@ package
 	import starling.utils.ScaleMode;
 	
 	[SWF(width="640", height="960", frameRate="60", backgroundColor="#000000")]
-	public class CairnsCrushWeb extends Sprite
+	public class MinuteOfMadness extends Sprite
 	{
 		private var _starling:Starling;
 		
-		public function CairnsCrushWeb()
+		public function MinuteOfMadness()
 		{
 			super();
 			// Support for autoOrient

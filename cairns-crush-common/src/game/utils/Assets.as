@@ -45,7 +45,7 @@ package game.utils
 		public static const BtnHighScores:Class;
 		[Embed(source="/../assets/ui/BtnPlay.png")]
 		public static const BtnPlay:Class;
-		[Embed(source="/../assets/logo_main.png")]
+		[Embed(source="/../assets/logo_main_2.png")]
 		public static const LogoMain:Class;
 		[Embed(source="/../assets/babdImage.png")]
 		public static const babdImage:Class;

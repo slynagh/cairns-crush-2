@@ -50,8 +50,8 @@ package game.core.scenes
 			_gems = [] ;
 			
 			babdImage = new Image( Assets.getTexture("babdImage"));
-			babdImage.x=-42;
-			babdImage.y=618;
+			babdImage.x=(stage.stageWidth>>1) - (babdImage.width>>1);
+			babdImage.y=stage.stageHeight - babdImage.height - 20;
 			this.addChild(babdImage);
 			
 			_gemsAnim = new Sprite();
@@ -61,13 +61,13 @@ package game.core.scenes
 			title = new Image( Assets.getTexture("LogoMain") );
 			title.touchable = false ;
 			title.pivotX = title.width>>1;
-			//title.pivotY = title.height >>1;
+			title.pivotY = title.height>>1;
 			title.x = stage.stageWidth>>1;
-			title.y = -500 ;
+			title.y = -title.height;
 			title.rotation = deg2rad(2);
 			//title.scaleX = title.scaleY = 0;
 			var titleTween:Tween = new Tween(title,1,Transitions.EASE_OUT_BOUNCE);
-			titleTween.animate("y", -86);
+			titleTween.animate("y", 240);
 			var titleSwing:Tween = new Tween(title, 2, Transitions.EASE_IN_OUT);
 			titleSwing.rotateTo(deg2rad(-2));
 			titleSwing.repeatCount = 0;
@@ -81,12 +81,12 @@ package game.core.scenes
 			btnPlay.pivotY = btnPlay.height>>1;
 			btnPlay.scaleX = btnPlay.scaleY = 0;
 			btnPlay.x = stage.stageWidth>>1;
-			btnPlay.y = 402 ;
+			btnPlay.y = (stage.stageHeight>>1) - 10;
 			var btnPlayTween:Tween = new Tween(btnPlay,0.5,Transitions.EASE_OUT_BOUNCE);
 			btnPlayTween.delay = 0.5 ;
 			btnPlayTween.scaleTo(1);
 			Starling.juggler.add( btnPlayTween);
-			addChild(btnPlay);			
+			addChild(btnPlay);		
 			
 			if (game.Config.TARGET === "mobile")
 			{
@@ -108,13 +108,12 @@ package game.core.scenes
 				//highScore = new TextField( stage.stageWidth,80,DataUtil.instance.highScore+"","JennaSue",72,0x5F680C);
 				highScore = new TextField( stage.stageWidth,80,"","JennaSue",72,0x5F680C);
 				refreshHSDetails();
-				highScore.y = 480 ;
+				highScore.y = 530 ;
 				highScore.touchable=false;
 				addChild(highScore);
 				
 				txt = new TextField( stage.stageWidth,64,"High Score","JennaSue",48,0x5F680C,true);
 				txt.y = highScore.y+72 ;
-				//txt.nativeFilters = [ new GlowFilter(0)];
 				txt.touchable =false ;
 				addChild(txt);
 				
@@ -179,7 +178,7 @@ package game.core.scenes
 					//hsText.text = "building high scores\r";
 					self.highScore.text = "";
 					
-					self.highScore.text += highScoreData[0][1]+ " "+highScoreData[0][0];
+					if (highScoreData.length) { self.highScore.text += highScoreData[0][1]+ " "+highScoreData[0][0]; }
 					/*for(i in highScoreData){
 					self.highScores.text += highScoreData[i][1]+ " "+highScoreData[i][0]+ " "+highScoreData[i][2]+"\n";
 					
